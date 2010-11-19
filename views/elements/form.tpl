@@ -42,26 +42,41 @@
 <fieldset id="properties">			
 			
 <table class="bordered">
-		
 	<tr>
-
-		<th>{t}status{/t}:</th>
+		<th>{t}priority{/t}:</th>
 		<td colspan="4">
-<label><input name="data[status]" value="on" type="radio">open</label>&nbsp;
-<label><input name="data[status]" value="off" checked="checked" type="radio">closed resolved</label>&nbsp;
-<label><input name="data[status]" value="draft" checked="checked" type="radio">closed unresolved</label>&nbsp;
-
-			
+			<select name="data[level]">
+				<option>very high (blocking bug)</option>
+				<option>high</option>
+				<option>medium</option>
+				<option>low</option>				
+			</select>
 		</td>
 	</tr>
-
-			
+	<tr>
+		<th>{t}type{/t}:</th>
+		<td colspan="4">
+			<select name="data[type]">
+				<option>bug</option>
+				<option>enhancement</option>
+				<option>newfeature</option>
+			</select>
+		</td>
+	</tr>		
+	<tr>
+		<th>{t}status{/t}:</th>
+		<td colspan="4">
+			<input name="data[status]" value="on" type="radio">open &nbsp;
+			<input name="data[status]" value="off" checked="checked" type="radio">closed resolved&nbsp;
+			<input name="data[status]" value="draft" checked="checked" type="radio">closed unresolved&nbsp;
+		</td>
+	</tr>
 
 	{if !(isset($publication)) || $publication}
 
 	<tr>
 		<td colspan="2">
-			<label>{t}scheduled from{/t}:</label>&nbsp;
+			{t}scheduled from{/t}:&nbsp;
 			
 			
 			<input size="10" type="text" style="vertical-align:middle"
@@ -69,7 +84,7 @@
 			value="{if !empty($object.start_date)}{$object.start_date|date_format:$conf->datePattern}{/if}" />
 			&nbsp;
 			
-			<label>{t}to{/t}: </label>&nbsp;
+			{t}to{/t}:&nbsp;
 			
 			<input size="10" type="text" 
 			class="dateinput" name="data[end_date]" id="end"
