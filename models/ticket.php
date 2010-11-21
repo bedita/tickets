@@ -27,7 +27,7 @@
 
 class Ticket extends BeditaObjectModel {
 			
-	public $objectTypesGroups = array("leafs", "related");
+	public $objectTypesGroups = array("related");
 
 }
 ?>
