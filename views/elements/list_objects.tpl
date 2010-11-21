@@ -101,13 +101,11 @@ $(document).ready(function(){
 			<th>{$beToolbar->order('title', 'title')}</th>
 			<th style="text-align:center">{$beToolbar->order('id', 'id')}</th>
 			<th style="text-align:center">{$beToolbar->order('status', 'status')}</th>
-			<th>{$beToolbar->order('modified', 'modified')}</th>
-			<th style="text-align:center">
-				{assign_associative var="htmlAttributes" alt="comments" border="0"} 
-				{$beToolbar->order('num_of_comment', '', 'iconComments.gif', $htmlAttributes)}
-			</th>			
-			<th>{$beToolbar->order('lang', 'lang')}</th>
-			<th>{$beToolbar->order('num_of_editor_note', 'notes')}</th>
+			<th>{$beToolbar->order('created', 'created')}</th>
+			<th>{$beToolbar->order('user_created', 'by')}</th>
+			<th>{$beToolbar->order('modified', 'last modified')}</th>
+			<th>{$beToolbar->order('user_modified', 'by')}</th>			
+			<th>{$beToolbar->order('num_of_editor_note', 'replies')}</th>
 		</tr>
 		</thead>
 	{/capture}
@@ -144,28 +142,21 @@ $(document).ready(function(){
 
 
 			</td>
-			<td style="min-width:300px">
+			<td>
 				<a href="{$html->url('view/')}{$objects[i].id}">{$objects[i].title|truncate:64|default:"<i>[no title]</i>"}</a>
-				<div class="description" id="desc_{$objects[i].id}">
-					nickname:{$objects[i].nickname}<br />
-					{$objects[i].description}
-				</div>
 			</td>
-			<td class="checklist detail" style="text-align:left; padding-top:4px;">
-				<a href="javascript:void(0)" onclick="$('#desc_{$objects[i].id}').slideToggle(); $('.plusminus',this).toggleText('+','-')">
-				<span class="plusminus">+</span>			
-				&nbsp;
-				{$objects[i].id}
-				</a>	
+			<td>
+				{$objects[i].id}	
 			</td>
-			<td style="text-align:center">{$objects[i].status}</td>
+			<td style="text-align:center">{$objects[i].status|replace:"draft":"unresolvable"|replace:"on":"open"|replace:"off":"resolved"}</td>
+			
+			<td>{$objects[i].created|date_format:$conf->datePattern}</td>
+			<td>{$objects[i].user_created}</td>
 			<td>{$objects[i].modified|date_format:$conf->dateTimePattern}</td>
-			<td style="text-align:center">{$objects[i].num_of_comment|default:0}</td>
-			<td>{$objects[i].lang}</td>
-			<td>{if $objects[i].num_of_editor_note|default:''}<img src="{$html->webroot}img/iconNotes.gif" alt="notes" />{/if}</td>
+			<td>{$objects[i].user_modified}</td>
+			<td>{if $objects[i].num_of_editor_note|default:''}<img src="{$html->webroot}img/iconNotes.gif" alt="notes" /> {$objects[i].num_of_editor_note|default:0}{/if}</td>
 		</tr>
-		
-		
+
 		
 		{sectionelse}
 		
@@ -211,7 +202,7 @@ $(document).ready(function(){
 <div class="tab"><h2>{t}Bulk actions on{/t}&nbsp;<span class="selecteditems evidence"></span> {t}selected records{/t}</h2></div>
 <div>
 
-{t}change status to{/t}: 	<select style="width:75px" id="newStatus" name="newStatus">
+{t}change status to{/t}: <select style="width:75px" id="newStatus" name="newStatus">
 								{html_options options=$conf->statusOptions}
 							</select>
 			<input id="changestatusSelected" type="button" value=" ok " class="opButton"/>
