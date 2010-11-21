@@ -29,6 +29,8 @@ Menu a SX valido per tutte le pagine del controller.
 	{/if}
 
 
+		{$view->element('select_categories')}
+
 
 </div>
 

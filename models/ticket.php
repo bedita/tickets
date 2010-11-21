@@ -20,18 +20,14 @@
  */
 
 /**
- * artworks setup 
+ * Tickets ticket object
+ *
+
  */
-$moduleSetup = array(
 
-	"publicName" => "tickets",
-	"author" => "Channelweb and Chialab",
-	"website" => "http://www.bedita.com",
-	"emailAddress" => "info@bedita.com",
-	"version" => "0.1",
-	"BEditaMinVersion" => "3.1",
-	"description" => "Tickets Module",
-	"BEditaObjects" => array("Ticket") 
-);
+class Ticket extends BeditaObjectModel {
+			
+	public $objectTypesGroups = array("leafs", "related");
 
+}
 ?>
