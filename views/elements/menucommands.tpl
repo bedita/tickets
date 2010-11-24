@@ -20,7 +20,7 @@ Menu a SX valido per tutte le pagine del controller.
 	{if !empty($method) && $method != "index"}
 	<div class="insidecol">
 		<input class="bemaincommands" type="button" value=" {t}Save{/t} " name="save" id="saveBEObject" />
-		<input class="bemaincommands" type="button" value=" {t}clone{/t} " name="clone" id="cloneBEObject" />
+		<!-- <input class="bemaincommands" type="button" value=" {t}clone{/t} " name="clone" id="cloneBEObject" /> -->
 		<input class="bemaincommands" type="button" value="{t}Delete{/t}" name="delete" id="delBEObject" />
 	</div>
 	

@@ -148,7 +148,7 @@ $(document).ready(function(){
 			<td>
 				{$objects[i].id}	
 			</td>
-			<td style="text-align:center">{$objects[i].status|replace:"draft":"unresolvable"|replace:"on":"open"|replace:"off":"resolved"}</td>
+			<td style="text-align:center">{$objects[i].status|replace:"on":"open"|replace:"off":"closed"}</td>
 			
 			<td>{$objects[i].created|date_format:$conf->datePattern}</td>
 			<td>{$objects[i].user_created}</td>

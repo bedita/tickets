@@ -21,6 +21,7 @@
 {* title and description *}
 
 {assign var="newtitle" value=$html->params.named.title|default:''}
+
 <div class="tab"><h2>{t}Title{/t}</h2></div>
 
 <fieldset id="title">
@@ -45,14 +46,24 @@
 				
 	<table class="bordered">
 		
-		<tr>
-			<th>{t}status{/t}:</th>
-			<td colspan="4">
-				<input name="data[status]" value="on" type="radio">open &nbsp;
-				<input name="data[status]" value="off" checked="checked" type="radio">resolved&nbsp;
-				<input name="data[status]" value="draft" checked="checked" type="radio">unresolvable&nbsp;
-			</td>
-		</tr>
+	<tr>
+
+		<th>{t}status{/t}:</th>
+		<td colspan="4">
+			{if $object.fixed}
+				{t}This object is fixed - some data is readonly{/t}
+				<input type="hidden" name="data[status]" value="{$object.status}" />
+			{else}
+				{html_radios name="data[status]" options=$conf->statusOptions selected=$object.status|default:$conf->defaultStatus separator="&nbsp;"}
+			{/if}
+			
+			{if in_array('administrator',$BEAuthUser.groups)}
+				&nbsp;&nbsp;&nbsp; <b>fixed</b>:&nbsp;&nbsp;<input type="checkbox" name="data[fixed]" value="1" {if !empty($object.fixed)}checked{/if} />
+			{else}
+				<input type="hidden" name="data[fixed]" value="{$object.fixed}" />
+			{/if}
+		</td>
+	</tr>
 	
 				
 	
