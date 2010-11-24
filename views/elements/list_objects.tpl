@@ -207,6 +207,7 @@ $(document).ready(function(){
 							</select>
 			<input id="changestatusSelected" type="button" value=" ok " class="opButton"/>
 	<hr />
+{*
 	
 	{if !empty($tree)}
 		{assign var='named_arr' value=$view->params.named}
@@ -254,7 +255,7 @@ $(document).ready(function(){
 			<hr />
 		{/if}
 	{/if}
-	
+*}
 	<input id="deleteSelected" type="button" value="X {t}Delete selected items{/t}"/>
 </div>
 
