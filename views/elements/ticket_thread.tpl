@@ -32,7 +32,7 @@ function showNoteResponse(data) {
 	} else {
 		var emptyDiv = "<div><\/div>";
 		$(emptyDiv).load(urlLoadNote, data, function() {
-			$("#listNote").prepend(this);
+			$("#listNote").append(this);
 			$("#noteloader").hide();
 			$(this).find("input[name=deletenote]").click(function() {
 				refreshNoteList($(this));
@@ -95,12 +95,12 @@ function refreshNoteList(delButton) {
 	<div class="tab"><h2>{t}Notes{/t}</h2></div>
  
 	<div id="editornotes" style="padding-left:10px">
-	{*dump var=$object.EditorNote|@array_reverse*}
+
 	{strip}
 
 		<div id="listNote" style="margin:10px;">
 		{if (!empty($object.EditorNote))}
-			{foreach from=$object.EditorNote|@array_reverse item="note"}
+			{foreach from=$object.EditorNote item="note"}
 				{assign_associative var="params" note=$note}
 				{$view->element('single_note', $params)}
 			{/foreach}
@@ -120,6 +120,7 @@ function refreshNoteList(delButton) {
 		style="margin-left:10px; height:110px; width:628px"></textarea>
 		<input type="submit" style="margin:10px" value="{t}send{/t}" />
 		</form>
+		
 		<br style="clear:both" />
 		<div class="loader" id="noteloader" style="clear:both">&nbsp;</div>
 	
