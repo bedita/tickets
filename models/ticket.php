@@ -22,12 +22,38 @@
 /**
  * Tickets ticket object
  *
-
  */
+class Ticket extends BEAppObjectModel {
 
-class Ticket extends BeditaObjectModel {
-			
+	public $searchFields = array("title" => 8 , "description" => 4, 
+		"ticket_status" => 6, "severity" => 6);
+
 	public $objectTypesGroups = array("related");
 
+		protected $modelBindings = array( 
+				"detailed" =>  array("BEObject" => array("ObjectType", 
+															"UserCreated", 
+															"UserModified", 
+															"ObjectProperty",
+															"RelatedObject",
+															"Annotation",
+															"Category"
+															)),
+				"default" => array("BEObject" => array("ObjectProperty", 
+									"ObjectType", "Annotation",
+									"Category", "RelatedObject" )),
+
+				"minimum" => array("BEObject" => array("ObjectType"))		
+	);
+	
+	function beforeSave() {	
+		if("off" === $this->data["Ticket"]["status"] && empty($this->data["Ticket"]["closed_date"]) ) {
+			$this->data["Ticket"]["closed_date"] = date("Y-m-d H:i:s");
+		} else if(!empty($this->data["Ticket"]["closed_date"])){
+			$this->data["Ticket"]["closed_date"] = null;
+		}
+		return true ;
+	}
+	
 }
 ?>

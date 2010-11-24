@@ -46,50 +46,50 @@
 				
 	<table class="bordered">
 		
-	<tr>
-
-		<th>{t}status{/t}:</th>
-		<td colspan="4">
-			{if $object.fixed}
-				{t}This object is fixed - some data is readonly{/t}
-				<input type="hidden" name="data[status]" value="{$object.status}" />
-			{else}
-				{html_radios name="data[status]" options=$conf->statusOptions selected=$object.status|default:$conf->defaultStatus separator="&nbsp;"}
-			{/if}
-			
-			{if in_array('administrator',$BEAuthUser.groups)}
-				&nbsp;&nbsp;&nbsp; <b>fixed</b>:&nbsp;&nbsp;<input type="checkbox" name="data[fixed]" value="1" {if !empty($object.fixed)}checked{/if} />
-			{else}
-				<input type="hidden" name="data[fixed]" value="{$object.fixed}" />
-			{/if}
-		</td>
-	</tr>
-	
-				
-	
-		{if !(isset($publication)) || $publication}
-	
 		<tr>
-			<td colspan="2">
-				{t}scheduled from{/t}:&nbsp;
-				
-				
-				<input size="10" type="text" style="vertical-align:middle"
-				class="dateinput" name="data[start_date]" id="start"
-				value="{if !empty($object.start_date)}{$object.start_date|date_format:$conf->datePattern}{/if}" />
-				&nbsp;
-				
-				{t}to{/t}:&nbsp;
-				
-				<input size="10" type="text" 
-				class="dateinput" name="data[end_date]" id="end"
-				value="{if !empty($object.end_date)}{$object.end_date|date_format:$conf->datePattern}{/if}" />
-	
+			<th>{t}status{/t}:</th>
+			<td colspan="4">
+				<input name="data[status]" value="on" {if $object.status == "on"} checked="checked"{/if} type="radio">open &nbsp;
+				<input name="data[status]" value="off" {if $object.status == "off"} checked="checked"{/if} type="radio">closed&nbsp;
+				<input name="data[status]" value="draft" {if $object.status == "draft" || empty($object.status)} checked="checked"{/if} type="radio">draft&nbsp;
 			</td>
 		</tr>
-	
-		{/if}
 
+		<tr>
+			<th>{t}severity{/t}:</th>
+			<td colspan="4">
+				<select name="data[severity]" id="ticketSev">
+				{foreach item=sev from=$conf->ticketSeverity}
+					<option {if $sev==$object.severity}selected="selected"{/if} value="{$sev}">{$sev}</option>
+				{/foreach}
+				</select>
+			</td>
+		</tr>
+
+		<tr>
+			<th>
+				{t}expected resolution date{/t}:&nbsp;
+			</th>
+			<td colspan="4">
+				<input size="10" type="text" style="vertical-align:middle"
+				class="dateinput" name="data[exp_resolution_date]" id="expDate"
+				value="{if !empty($object.exp_resolution_date)}{$object.exp_resolution_date|date_format:$conf->datePattern}{/if}" />
+				&nbsp;
+			</td>
+		</tr>
+
+		<tr>
+			<th>{t}closed date{/t}:</th>
+			<td>{if !empty($object.closed_date)}{$object.closed_date|date_format:$conf->dateTimePattern}{/if}</td>
+		</tr>
+		
+		<tr>
+			<th>{t}percentage complete{/t}:</th>
+			<td>
+			<input type="text" name="data[percent_completed]" value="{$object.percent_completed}" />
+		</td>
+ 		</tr>
+		
 		<tr>
 			<th>{t}created by{/t}:</th>
 			<td>{$object.UserCreated.realname|default:''} [ {$object.UserCreated.userid|default:''} ]</td>

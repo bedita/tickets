@@ -30,10 +30,16 @@ class TicketsController extends ModulesController {
 	var $helpers 	= array('BeTree', 'BeToolbar');
 	
 	protected $moduleName = 'tickets';
+
+	protected function beditaBeforeFilter() {
+		BeLib::getObject('BeConfigure')->loadPluginLocalConfig($this->moduleName);
+	}
 	
 	public function index($id = null, $order = "", $dir = true, $page = 1, $dim = 20) {
 		$conf  = Configure::getInstance() ;
 		$filter["object_type_id"] = array($conf->objectTypes['ticket']["id"]);
+		$filter["user_created"] = "";
+		$filter["Ticket.severity"] = "";
 		$filter["count_annotation"] = array("EditorNote");
 		$this->paginatedList($id, $filter, $order, $dir, $page, $dim);
 		$this->loadCategories($filter["object_type_id"]);

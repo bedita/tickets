@@ -102,9 +102,9 @@ $(document).ready(function(){
 			<th style="text-align:center">{$beToolbar->order('id', 'id')}</th>
 			<th style="text-align:center">{$beToolbar->order('status', 'status')}</th>
 			<th>{$beToolbar->order('created', 'created')}</th>
-			<th>{$beToolbar->order('user_created', 'by')}</th>
+			<th>{$beToolbar->order('userid', 'reporter')}</th>
 			<th>{$beToolbar->order('modified', 'last modified')}</th>
-			<th>{$beToolbar->order('user_modified', 'by')}</th>			
+			<th>{$beToolbar->order('severity','severity')}</th>
 			<th>{$beToolbar->order('num_of_editor_note', 'replies')}</th>
 		</tr>
 		</thead>
@@ -151,9 +151,9 @@ $(document).ready(function(){
 			<td style="text-align:center">{$objects[i].status|replace:"on":"open"|replace:"off":"closed"}</td>
 			
 			<td>{$objects[i].created|date_format:$conf->datePattern}</td>
-			<td>{$objects[i].user_created}</td>
+			<td>{$objects[i].userid}</td>
 			<td>{$objects[i].modified|date_format:$conf->dateTimePattern}</td>
-			<td>{$objects[i].user_modified}</td>
+			<td>{$objects[i].severity}</td>
 			<td>{if $objects[i].num_of_editor_note|default:''}<img src="{$html->webroot}img/iconNotes.gif" alt="notes" /> {$objects[i].num_of_editor_note|default:0}{/if}</td>
 		</tr>
 

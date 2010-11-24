@@ -3,7 +3,7 @@
  * 
  * BEdita - a semantic content management framework
  * 
- * Copyright 2010 ChannelWeb Srl, Chialab Srl
+ * Copyright 2010 ChannelWeb Srl
  * 
  * This file is part of BEdita: you can redistribute it and/or modify
  * it under the terms of the Affero GNU General Public License as published 
@@ -20,19 +20,17 @@
  */
 
 /**
- * tickets setup 
+ * Write here your module global configurations. This configurations will be loaded in every BEdita's page
+ * For example use it to define objects relations with other BEdita objects  
  */
-$moduleSetup = array(
 
-	"publicName" => "tickets",
-	"author" => "Channelweb and Chialab",
-	"website" => "http://www.bedita.com",
-	"emailAddress" => "info@bedita.com",
-	"version" => "0.1",
-	"BEditaMinVersion" => "3.1",
-	"description" => "Tickets Module",
-	"BEditaObjects" => array("Ticket"),
-	"tables" => array("tickets"),
+$config["objRelationType"] = array(
+   "seeTicket" => array(
+		"hidden" => true,
+		"left" 	 => array("ticket"),
+		"right"  => array("ticket")
+	)
 );
+
 
 ?>
