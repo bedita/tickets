@@ -26,7 +26,7 @@
  */
 class TicketsController extends ModulesController {
 	
-	public $uses = array("Ticket");
+	public $uses = array("Ticket","User");
 	var $helpers 	= array('BeTree', 'BeToolbar');
 	
 	protected $moduleName = 'tickets';
@@ -67,6 +67,28 @@ class TicketsController extends ModulesController {
 		$this->checkWriteModulePermission();
 		$this->Transaction->begin();
 		$this->saveObject($this->Ticket);
+		if(!empty($this->data["users"])) {
+			$ticket_id = $this->Ticket->id;
+			$objectUserModel = ClassRegistry::init("ObjectUser");
+			$users = explode(",",$this->data["users"]);
+			foreach($users as $user_id) {
+				// controllo che relazione non esiste già
+				$data = array(
+					"object_id" => $ticket_id,
+					"user_id" => $user_id,
+					"switch" => "assigned"
+				);
+				$result = $objectUserModel->find("count",
+					array(
+						"conditions" => $data
+					)
+				);
+				if($result == 0) {
+					$objectUserModel->create();
+					$objectUserModel->save($data);
+				}
+			}
+		}
 	 	$this->Transaction->commit() ;
  		$this->userInfoMessage(__("Ticket saved", true)." - ".$this->data["title"]);
 		$this->eventInfo("ticket [". $this->data["title"]."] saved");
@@ -87,6 +109,11 @@ class TicketsController extends ModulesController {
 		$this->Transaction->commit();
 		$this->userInfoMessage(__("Category saved", true)." - ".$this->data["label"]);
 		$this->eventInfo("category [" .$this->data["label"] . "] saved");
+	}
+
+	public function showUsers() {
+		$this->set('users', $this->User->findAll());
+		$this->layout = null;
 	}
 
 	public function deleteCategories() {

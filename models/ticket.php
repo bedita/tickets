@@ -37,11 +37,12 @@ class Ticket extends BEAppObjectModel {
 															"ObjectProperty",
 															"RelatedObject",
 															"Annotation",
-															"Category"
+															"Category",
+															"User"
 															)),
 				"default" => array("BEObject" => array("ObjectProperty", 
 									"ObjectType", "Annotation",
-									"Category", "RelatedObject" )),
+									"Category", "RelatedObject","User" )),
 
 				"minimum" => array("BEObject" => array("ObjectType"))		
 	);

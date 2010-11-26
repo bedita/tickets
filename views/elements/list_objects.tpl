@@ -93,6 +93,9 @@ $(document).ready(function(){
 
 	<input type="hidden" name="data[id]"/>
 
+	<input type="hidden" name="data[users]" id="checkedUsers" /> {* utenti selezionati da modale *}
+	<input type="hidden" name="data[tickets]" id="checkedTickets" /> {* ticket selezionati *}
+
 	<table class="indexlist">
 	{capture name="theader"}
 		<thead>
@@ -255,6 +258,8 @@ $(document).ready(function(){
 			<hr />
 		{/if}
 	{/if}
+	
+
 *}
 	<input id="deleteSelected" type="button" value="X {t}Delete selected items{/t}"/>
 </div>

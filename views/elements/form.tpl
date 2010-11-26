@@ -2,7 +2,30 @@
 ** tickets form template
 *}
 
+<script type="text/javascript">
+{literal}
+function assignTicketToUsers(ids,users) {
+	$('#usersAssign').val(ids);
+	$('#usersAssignDiv').html(users);
+	$('#usersAssignDiv').show();
+}
+
+var ts = {{/literal}{foreach item='val' key='key' from=$conf->ticketStatus}"{$key}":"{$val}",{/foreach}"":""{literal}}{/literal}
+{literal}
+$(document).ready(function(){
+	$('#ticketStatus').change(function () {
+		$('#status').val(ts[this.value]);
+	});
+});
+
+
+{/literal}
+
+
+</script>
+
 <form action="{$html->url('/tickets/save')}" method="post" name="updateForm" id="updateForm" class="cmxform">
+
 <input type="hidden" name="data[id]" value="{$object.id|default:''}"/>
 
 {if ($conf->mce|default:true)}
@@ -47,14 +70,16 @@
 	<table class="bordered">
 		
 		<tr>
-			<th>{t}status{/t}:</th>
+			<th>{t}status{/t}</th>
 			<td colspan="4">
-				<input name="data[status]" value="on" {if $object.status == "on"} checked="checked"{/if} type="radio">open &nbsp;
-				<input name="data[status]" value="off" {if $object.status == "off"} checked="checked"{/if} type="radio">closed&nbsp;
-				<input name="data[status]" value="draft" {if $object.status == "draft" || empty($object.status)} checked="checked"{/if} type="radio">draft&nbsp;
+				<select name="data[ticket_status]" id="ticketStatus">
+				{foreach item=sta key='key' from=$conf->ticketStatus}
+					<option {if $key==$object.ticket_status}selected="selected"{/if} value="{$key}">{$key}</option>
+				{/foreach}
+				</select>
+				<input type="hidden" name="data[status]" id="status" />
 			</td>
 		</tr>
-
 		<tr>
 			<th>{t}severity{/t}:</th>
 			<td colspan="4">
@@ -108,10 +133,26 @@
 		</tr>
 		
 		<tr>
-			<th>{t}assegnato a{/t}:</th>
+			<th>-</th>
 			<td>
-				<input type="text" name="data[creator]" value="{$object.creator}" />
-				<input type="hidden" name="data[user_created]" value="{$object.user_created}" />
+			
+				<input type="button" class="modalbutton" name="edit" value=" {t}assign to user(s){/t}  "
+					rel="{$html->url('/tickets/showUsers')}"
+					title="USERS : select user(s) to assign ticket" />
+
+			</td>
+		</tr>
+		<tr>
+			<th>{t}assigned to{/t}:</th>
+			<td>
+
+				<span id="usersAssignDiv">
+					{if !empty($object.User)}
+					{foreach from=$object.User item='u' name='user'}{$u.userid}{if !$smarty.foreach.user.last},{/if}{/foreach}
+					{/if}
+				</span>
+				<input type="hidden" id="usersAssign" name="data[users]" />
+
 			</td>
 		</tr>
 		

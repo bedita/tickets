@@ -29,6 +29,11 @@ $config["objRelationType"] = array(
 		"hidden" => true,
 		"left" 	 => array("ticket"),
 		"right"  => array("ticket")
+	),
+	"assign" => array(
+		"hidden" => false,
+		"left" 	 => array("ticket"),
+		"right"  => array("user")
 	)
 );
 
