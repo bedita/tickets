@@ -45,7 +45,6 @@ $(document).ready(function() {
 		<th>{t}username{/t}</th>
 		<th style="width:50%">{t}realname{/t}</th>
 	</tr>
-	{dump var=$users}
 	{foreach from=$users item=u}
 	{if empty($u.Ticket)}
 	<tr>
