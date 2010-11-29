@@ -51,7 +51,7 @@ $(document).ready(function(){
 
 	<label>{t}title{/t}:</label>
 	<br />
-	<input type="text" name="data[title]" value="{$object.title|escape:'html'|escape:'quotes'|default:$newtitle}" id="titleBEObject" />
+	<input type="text" name="data[title]" style="width:100%" value="{$object.title|escape:'html'|escape:'quotes'|default:$newtitle}" id="titleBEObject" />
 	<br />
 	<label>{t}description{/t}:</label>
 	<br />
@@ -112,56 +112,55 @@ $(document).ready(function(){
 			<th>{t}percentage complete{/t}:</th>
 			<td>
 			<input type="text" name="data[percent_completed]" value="{$object.percent_completed}" />
-		</td>
+			</td>
  		</tr>
-		
-		<tr>
-			<th>{t}created by{/t}:</th>
-			<td>{$object.UserCreated.realname|default:''} [ {$object.UserCreated.userid|default:''} ]</td>
-		</tr>	
-		<tr>
-			<th>{t}created on{/t}:</th>
-			<td>{$object.created|date_format:$conf->dateTimePattern}</td>
-		</tr>	 
-		<tr>
-			<th style="white-space:nowrap">{t}last modified on{/t}:</th>
-			<td>{$object.modified|date_format:$conf->dateTimePattern}</td>
-		</tr>
-		<tr>
-			<th style="white-space:nowrap">{t}last modified by{/t}:</th>
-			<td>{$object.UserModified.realname|default:''} [ {$object.UserModified.userid|default:''} ]</td>
-		</tr>
-		
-		<tr>
-			<th>-</th>
-			<td>
-			
-				<input type="button" class="modalbutton" name="edit" value=" {t}assign to user(s){/t}  "
-					rel="{$html->url('/tickets/showUsers')}"
-					title="USERS : select user(s) to assign ticket" />
-
-			</td>
-		</tr>
-		<tr>
-			<th>{t}assigned to{/t}:</th>
-			<td>
-
-				<span id="usersAssignDiv">
-					{if !empty($object.User)}
-					{foreach from=$object.User item='u' name='user'}{$u.userid}{if !$smarty.foreach.user.last},{/if}{/foreach}
-					{/if}
-				</span>
-				<input type="hidden" id="usersAssign" name="data[users]" />
-
-			</td>
-		</tr>
-		
 		<tr>
 			<th>{t}durata{/t}:</th>
 			<td>
 				<input type="text" name="data[duration]" value="{if !empty($object.duration)}{$object.duration/60}{/if}" />
 			</td>
 		</tr>
+	</table>
+	
+</fieldset>
+
+<div class="tab"><h2>{t}Users and time{/t}</h2></div>
+
+<fieldset id="properties">			
+				
+	<table class="bordered">
+		<tr>
+			<td>
+			
+				<input type="button" class="modalbutton" name="edit" value=" {t}assigned to: {/t}  "
+					rel="{$html->url('/tickets/showUsers')}"
+					title="USERS : select user(s) to assign ticket" />
+
+			</td>
+			<td colspan="4">
+				<span id="usersAssignDiv">
+					{if !empty($object.User)}
+					{foreach from=$object.User item='u' name='user'}{$u.userid}{if !$smarty.foreach.user.last},{/if}{/foreach}
+					{/if}
+				</span>
+				<input type="hidden" id="usersAssign" name="data[users]" />
+			</td>
+
+		</tr>
+	
+		<tr>
+			<th>{t}created on{/t}:</th>
+			<td>{$object.created|date_format:$conf->dateTimePattern}</td>
+			<th>{t}by{/t}:</th>
+			<td>{$object.UserCreated.realname|default:''} [ {$object.UserCreated.userid|default:''} ]</td>
+		</tr>	 
+		<tr>
+			<th style="white-space:nowrap">{t}last modified on{/t}:</th>
+			<td>{$object.modified|date_format:$conf->dateTimePattern}</td>
+			<th style="white-space:nowrap">{t}by{/t}:</th>
+			<td>{$object.UserModified.realname|default:''} [ {$object.UserModified.userid|default:''} ]</td>
+		</tr>
+		
 	</table>
 	
 </fieldset>

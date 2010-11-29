@@ -1,2 +1,7 @@
 
 .obj.unread * {font-weight:bold}
+
+P.editornotes {
+	color:#000 !important;
+	font-size:1em !important;
+}
