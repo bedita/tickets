@@ -112,6 +112,7 @@ class TicketsController extends ModulesController {
 	}
 
 	public function showUsers() {
+		// TODO filtrarlo per gruppi abilitati al backend, sennò sul sadava siamo già ad un migliaio
 		$this->set('users', $this->User->findAll());
 		$this->layout = null;
 	}
