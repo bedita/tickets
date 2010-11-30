@@ -24,7 +24,7 @@
 	<br />
 	<label>{t}description{/t}:</label>
 	<br />
-	<textarea id="subtitle" class="mce" style="height:280px" name="data[description]">{$object.description|default:''|escape:'html'}</textarea>
+	<textarea class="mce subtitle" style="height:280px" name="data[description]">{$object.description|default:''|escape:'html'}</textarea>
 	
 
 
