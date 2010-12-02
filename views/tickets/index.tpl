@@ -13,18 +13,21 @@
 	<div class="tab"><h2>{t}filters{/t}</h2></div>
 	<div>
 		
+		{t}display only{/t}: &nbsp;
 		{foreach item=sta key='key' from=$conf->ticketStatus}
-			<input type="checkbox" value="{$key}" name="data[status]" /> {t}{$key}{/t} &nbsp;
+			<input type="checkbox" value="{$key}" checked="checked" name="data[status]" /> {t}{$key}{/t} &nbsp;
 		{/foreach}
 
-		&nbsp;|
-		&nbsp;{t}reporter{/t}: &nbsp;
+		<hr />
+		{t}reporter{/t}: &nbsp;
 		<select name="data[reporter]">
-		<option value="">armando carcassone</option>
+			<option value="">all</option>
+			<option value="">armando carcassone</option>
 		</select>
 		
 		&nbsp;{t}severity{/t}: &nbsp;
 		<select name="data[severity]" id="ticketSev">
+			<option value="">all</option>
 		{foreach item=sev from=$conf->ticketSeverity}
 			<option value="{$sev}">{$sev}</option>
 		{/foreach}
