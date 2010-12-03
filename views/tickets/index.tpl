@@ -50,7 +50,7 @@ $(document).ready(function(){
 		{/foreach}
 		</fieldset>
 		<br/>
-		{$filter.hide_status_off|default:'none'}
+
 		{assign var="hide_off" value=$filter.hide_status_off|default:'false'}
 		<input type="checkbox" name="data[hide_status_off]" id="filterTicketStatus" {if ($hide_off == 'true')}checked="checked"{/if}/>{t}Hide 'off'{/t}
 
