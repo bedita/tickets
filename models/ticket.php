@@ -47,6 +47,10 @@ class Ticket extends BEAppObjectModel {
 				"minimum" => array("BEObject" => array("ObjectType"))		
 	);
 	
+	function beforeValidate() {
+        $this->checkDate('exp_resolution_date');
+	}
+	
 	function beforeSave() {	
 		if("off" === $this->data["Ticket"]["status"] && empty($this->data["Ticket"]["closed_date"]) ) {
 			$this->data["Ticket"]["closed_date"] = date("Y-m-d H:i:s");
