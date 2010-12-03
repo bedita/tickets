@@ -133,7 +133,7 @@ $(document).ready(function(){
 			<td>
 			
 				<input type="button" class="modalbutton" name="edit" value=" {t}assigned to: {/t}  "
-					rel="{$html->url('/tickets/showUsers')}"
+					rel="{$html->url('/tickets/showUsers')}{if !empty($object)}/{$object.id}{/if}"
 					title="USERS : select user(s) to assign ticket" />
 
 			</td>
@@ -143,7 +143,7 @@ $(document).ready(function(){
 					{foreach from=$object.User item='u' name='user'}{$u.userid}{if !$smarty.foreach.user.last},{/if}{/foreach}
 					{/if}
 				</span>
-				<input type="hidden" id="usersAssign" name="data[users]" />
+				<input type="hidden" id="usersAssign" name="data[users]" value="{if !empty($object.User)}{foreach from=$object.User item='u' name='user'}{$u.id}{if !$smarty.foreach.user.last},{/if}{/foreach}{/if}"/>
 			</td>
 
 		</tr>

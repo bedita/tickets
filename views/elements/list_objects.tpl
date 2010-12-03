@@ -103,7 +103,7 @@ $(document).ready(function(){
 			<th>{$beToolbar->order('fixed', '&nbsp;')}</th>
 			<th>{$beToolbar->order('title', 'title')}</th>
 			<th style="text-align:center">{$beToolbar->order('id', 'id')}</th>
-			<th style="text-align:center">{$beToolbar->order('status', 'status')}</th>
+			<th style="text-align:center">{$beToolbar->order('ticket_status', 'status')}</th>
 			<th>{$beToolbar->order('created', 'created')}</th>
 			<th>{$beToolbar->order('userid', 'reporter')}</th>
 			<th>{$beToolbar->order('modified', 'last modified')}</th>
@@ -151,8 +151,8 @@ $(document).ready(function(){
 			<td>
 				{$objects[i].id}	
 			</td>
-			<td style="text-align:center">{$objects[i].status|replace:"on":"open"|replace:"off":"closed"}</td>
-			
+			<td style="text-align:center">{$objects[i].ticket_status}</td>
+	
 			<td>{$objects[i].created|date_format:$conf->datePattern}</td>
 			<td>{$objects[i].userid}</td>
 			<td>{$objects[i].modified|date_format:$conf->dateTimePattern}</td>

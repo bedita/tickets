@@ -30,10 +30,10 @@ $config["objRelationType"] = array(
 		"left" 	 => array("ticket"),
 		"right"  => array("ticket")
 	),
-	"assign" => array(
+	"ticketRelated" => array(
 		"hidden" => false,
 		"left" 	 => array("ticket"),
-		"right"  => array("user")
+		"right"  => array("document", "event", "short_news", "image","video", "card")
 	)
 );
 
