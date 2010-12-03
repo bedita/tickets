@@ -202,12 +202,13 @@ $(document).ready(function(){
 <div class="tab"><h2>{t}Bulk actions on{/t}&nbsp;<span class="selecteditems evidence"></span> {t}selected records{/t}</h2></div>
 <div>
 
+{*
+
 {t}change status to{/t}: <select style="width:75px" id="newStatus" name="newStatus">
 								{html_options options=$conf->statusOptions}
 							</select>
 			<input id="changestatusSelected" type="button" value=" ok " class="opButton"/>
 	<hr />
-{*
 	
 	{if !empty($tree)}
 		{assign var='named_arr' value=$view->params.named}
