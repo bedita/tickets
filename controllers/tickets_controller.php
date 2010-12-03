@@ -61,6 +61,7 @@ class TicketsController extends ModulesController {
 
 	public function view($id = null) {
 		$this->viewObject($this->Ticket, $id);
+		$this->set("objectTypeId", Configure::read("objectTypes.ticket.id"));
 	}
 	
 	public function delete() {

@@ -26,7 +26,7 @@
 
 $config["objRelationType"] = array(
    "seeTicket" => array(
-		"hidden" => true,
+		"hidden" => false,
 		"left" 	 => array("ticket"),
 		"right"  => array("ticket")
 	),
