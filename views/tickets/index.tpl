@@ -18,13 +18,6 @@ $(document).ready(function(){
 		$("#formObject").submit() ;
 	});
 	$('#filterTicketStatus').click(function(){
-		if(this.checked) {
-{/literal}
-{foreach item=sta key='key' from=$conf->ticketStatus}
-{if $sta=='off'}$('#status_{$key}').attr("checked",false);{/if}
-{/foreach}
-{literal}
-		}
 		$("#formObject").submit() ;
 	});
 });
@@ -51,8 +44,8 @@ $(document).ready(function(){
 		</fieldset>
 		<br/>
 
-		{assign var="hide_off" value=$filter.hide_status_off|default:'false'}
-		<input type="checkbox" name="data[hide_status_off]" id="filterTicketStatus" {if ($hide_off == 'true')}checked="checked"{/if}/>{t}Hide 'off'{/t}
+		{assign var="show_off" value=$filter.show_status_off|default:'false'}
+		<input type="checkbox" name="data[show_status_off]" id="filterTicketStatus" {if ($show_off == 'true')}checked="checked"{/if}/>{t}Show 'off'{/t}
 
 		<hr />
 		{t}reporter{/t}: &nbsp;
