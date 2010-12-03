@@ -11,13 +11,19 @@
 <div class="mainfull">
 	
 	<div class="tab"><h2>{t}filters{/t}</h2></div>
-	<div>
+	<div id="ticketfilter">		
+		{t}display only{/t}:
 		
-		{t}display only{/t}: &nbsp;
+		<fieldset style="display:inline; padding:5px 10px 5px 5px">
+		{assign var="prevsta" value="draft"}
 		{foreach item=sta key='key' from=$conf->ticketStatus}
-			<input type="checkbox" value="{$key}" checked="checked" name="data[status]" /> {t}{$key}{/t} &nbsp;
+		{if $sta!=$prevsta}</fieldset><fieldset style="display:inline; border-left:1px solid gray; 
+		padding:5px 10px 5px 10px">{/if}
+			<input type="checkbox" value="{$key}" checked="checked" name="data[status]" /> 
+			{t}{$key}{/t}&nbsp;
+			{assign var="prevsta" value=$sta}	
 		{/foreach}
-
+		</fieldset>
 		<hr />
 		{t}reporter{/t}: &nbsp;
 		<select name="data[reporter]">
@@ -32,6 +38,7 @@
 			<option value="{$sev}">{$sev}</option>
 		{/foreach}
 		</select>
+
 	</div>
 
 	{$view->element("list_objects")}
