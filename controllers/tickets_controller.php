@@ -42,6 +42,7 @@ class TicketsController extends ModulesController {
 		$filter["status"] = "<> 'off'";
 		$filter["Ticket.severity"] = "";
 		$filter["Ticket.ticket_status"] = "";
+		$filter["exp_resolution_date"] = "";
 		$filter["count_annotation"] = array("EditorNote");
 		$this->paginatedList($id, $filter, $order, $dir, $page, $dim);
 		$this->loadCategories($filter["object_type_id"]);
