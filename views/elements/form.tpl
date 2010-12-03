@@ -124,6 +124,9 @@ $(document).ready(function(){
 	
 </fieldset>
 
+{assign_associative var="params" containerId='attachContainer' collection="true" relation='attach' title='Attachments'}
+{$view->element("form_file_list", $params)}
+
 <div class="tab"><h2>{t}Users and time{/t}</h2></div>
 
 <fieldset id="properties">			

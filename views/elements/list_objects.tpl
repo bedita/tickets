@@ -86,10 +86,7 @@ $(document).ready(function(){
 {/literal}
 
 //-->
-</script>	
-
-	
-<form method="post" action="" id="formObject">
+</script>
 
 	<input type="hidden" name="data[id]"/>
 
@@ -265,10 +262,6 @@ $(document).ready(function(){
 </div>
 
 {/if}
-
-</form>
-
-
 
 <br />
 <br />

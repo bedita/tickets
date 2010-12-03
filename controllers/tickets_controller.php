@@ -39,15 +39,26 @@ class TicketsController extends ModulesController {
 		$conf  = Configure::getInstance() ;
 		$filter["object_type_id"] = array($conf->objectTypes['ticket']["id"]);
 		$filter["user_created"] = "";
-		$filter["status"] = "<> 'off'";
-		$filter["Ticket.severity"] = "";
-		$filter["Ticket.ticket_status"] = "";
+		$filter["Ticket.severity"] =  (!empty($this->data['severity'])) ? $this->data['severity'] : "";
+		if(!empty($this->data['status'])) {
+			$filter["Ticket.ticket_status"] = array_keys($this->data['status']);
+		} else {
+			$filter["Ticket.ticket_status"] = "";
+		}
 		$filter["exp_resolution_date"] = "";
+		$filter["BEObject.user_created"] = (!empty($this->data['reporter'])) ? $this->data['reporter'] : "";
 		$filter["count_annotation"] = array("EditorNote");
+		$f = $filter;
 		$this->paginatedList($id, $filter, $order, $dir, $page, $dim);
 		$this->loadCategories($filter["object_type_id"]);
+		$this->loadReporters();
+		if(!empty($this->data['status'])) $f["f_status"] = $this->data['status'];
+		if(!empty($this->data['reporter'])) $f["f_reporter"] = $this->data['reporter'];
+		if(!empty($this->data['severity'])) $f["f_severity"] = $this->data['severity'];
+		if(!empty($this->data['hide_status_off'])) $f["hide_status_off"] = "true";
+		$this->set("filter",$f);
 	}
-	
+
 	public function view($id = null) {
 		$this->viewObject($this->Ticket, $id);
 	}
@@ -75,7 +86,6 @@ class TicketsController extends ModulesController {
 			$versionModel = ClassRegistry::init("Version");
 			$numRev = $versionModel->numRevisions($this->data['id']);
 		}
-
 		$this->saveObject($this->Ticket);
 
 		// remove and create obj/user assignement
@@ -298,7 +308,16 @@ class TicketsController extends ModulesController {
 		$this->userInfoMessage(__("Category deleted", true) . " -  " . $this->data["label"]);
 		$this->eventInfo("Category " . $this->data["id"] . "-" . $this->data["label"] . " deleted");
 	}
-	
+
+	private function loadReporters() {
+		$reporters = array();
+		$data = $this->viewVars["objects"];
+		foreach($data as $k => $v) {
+			$reporters[$v['user_created']] = $v['userid'];
+		}
+		$this->set("reporters",$reporters);
+	}
+
 	protected function forward($action, $esito) {
 		$REDIRECT = array(
 			"cloneObject"	=> 	array(
