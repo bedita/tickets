@@ -5,3 +5,21 @@ P.editornotes {
 	color:#000 !important;
 	font-size:1em !important;
 }
+
+/* ticketSeverity colors */
+
+.critical {color:#cc0000}
+.major {}
+.normal {}
+.minor {}
+
+/* ticketStatus colors */
+
+.new {color:#ffff00}
+.assigned{}
+.analysis{}
+.development{}
+.test{}
+.resolved {color:#339900 !important;}
+.unresolvable {}
+.obsolete {}

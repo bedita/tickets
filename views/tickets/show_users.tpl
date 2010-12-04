@@ -11,33 +11,27 @@ $(document).ready(function() {
 		$(".ucheck:checked").each(function(){
 			if(users!="") {
 				ids+=",";
-				users+=",";
+				//users+=",";
 			}
 			ids+=$(this).val();
-			users+=$(this).attr("rel");
+			users+="<li>"+$(this).attr('rel')+"</li>";
 		});
 		$("#modal").hide();
 		$("#modaloverlay").hide();
 		assignTicketToUsers(ids,users);
 	});
 
-	$(".tab").click(function (){
-		$(this).BEtabstoggle();
-	});
-
-	var openAtStart ="#selectuser";
-	$(openAtStart).prev(".tab").BEtabstoggle();
 
 });
 {/literal}
 //-->
 </script>
 
-<div class="bodybg" style="height:480px; padding:20px;">
+<div class="bodybg" style="min-height:480px; padding:20px;">
 	
 <form id="uticketsForm" method="post">
 
-<div class="tab"><h2>{t}Select user(s) from the list{/t}</h2></div>
+<div class="tab stayopen"><h2>{t}Select / unselect user(s) from the list{/t}</h2></div>
 <fieldset id="selectuser">
 <table class="bordered">
 	<tr>

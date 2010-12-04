@@ -45,7 +45,7 @@ class TicketsController extends ModulesController {
 		} else {
 			$filter["Ticket.ticket_status"] = "";
 		}
-		if(empty($this->data['show_status_off'])) {
+		if(!empty($this->data['hide_status_off'])) {
 			$filter["status"] = "<> 'off'";
 		}
 		$filter["exp_resolution_date"] = "";
@@ -58,7 +58,7 @@ class TicketsController extends ModulesController {
 		if(!empty($this->data['status'])) $f["f_status"] = $this->data['status'];
 		if(!empty($this->data['reporter'])) $f["f_reporter"] = $this->data['reporter'];
 		if(!empty($this->data['severity'])) $f["f_severity"] = $this->data['severity'];
-		if(!empty($this->data['show_status_off'])) $f["show_status_off"] = "true";
+		if(!empty($this->data['hide_status_off'])) $f["hide_status_off"] = "true";
 		$this->set("filter",$f);
 	}
 

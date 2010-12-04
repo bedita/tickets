@@ -1,10 +1,10 @@
 {*
 ** tickets form template
 *}
-
-<script type="text/javascript">
 {literal}
+<script type="text/javascript">
 function assignTicketToUsers(ids,users) {
+	
 	$('#usersAssign').val(ids);
 	$('#usersAssignDiv').html(users);
 	$('#usersAssignDiv').show();
@@ -12,17 +12,20 @@ function assignTicketToUsers(ids,users) {
 
 var ts = {{/literal}{foreach item='val' key='key' from=$conf->ticketStatus}"{$key}":"{$val}",{/foreach}"":""{literal}}{/literal}
 {literal}
+
 $(document).ready(function(){
 	$('#ticketStatus').change(function () {
 		$('#status').val(ts[this.value]);
 	});
 });
-
-
+</script>
+<style>
+	#usersAssignDiv LI {display:inline; padding:4px 5px 4px 5px; width:auto; list-style:disc}
+</style>
 {/literal}
 
 
-</script>
+
 
 <form action="{$html->url('/tickets/save')}" method="post" name="updateForm" id="updateForm" class="cmxform">
 
@@ -67,14 +70,16 @@ $(document).ready(function(){
 
 <fieldset id="properties">			
 				
-	<table class="bordered">
-		
+	<table class="bordered">		
 		<tr>
 			<th>{t}status{/t}</th>
 			<td colspan="4">
 				<select name="data[ticket_status]" id="ticketStatus">
+				{assign var="prevsta" value="draft"}
 				{foreach item=sta key='key' from=$conf->ticketStatus}
-					<option {if $key==$object.ticket_status}selected="selected"{/if} value="{$key}">{$key}</option>
+					{if $sta!=$prevsta}<option onclick="this.blur()" disabled="">---- {$sta|replace:"on":"open"|replace:"off":"closed"} states ----</option>{/if}					
+					<option {if $key==$object.ticket_status}selected="selected"{/if} value="{$key}">{$key}</option>		
+				{assign var="prevsta" value=$sta}	
 				{/foreach}
 				</select>
 				<input type="hidden" name="data[status]" id="status" />
@@ -90,7 +95,6 @@ $(document).ready(function(){
 				</select>
 			</td>
 		</tr>
-
 		<tr>
 			<th>
 				{t}expected resolution date{/t}:&nbsp;
@@ -102,20 +106,20 @@ $(document).ready(function(){
 				&nbsp;
 			</td>
 		</tr>
-
+		{if !empty($object.closed_date)}
 		<tr>
 			<th>{t}closed date{/t}:</th>
-			<td>{if !empty($object.closed_date)}{$object.closed_date|date_format:$conf->dateTimePattern}{/if}</td>
+			<td>{$object.closed_date|date_format:$conf->dateTimePattern}</td>
 		</tr>
-		
+		{/if}
 		<tr>
 			<th>{t}percentage complete{/t}:</th>
 			<td>
-			<input type="text" name="data[percent_completed]" value="{$object.percent_completed}" />
+			<input type="range" name="data[percent_completed]" min="0" max="100" step="1" value="{$object.percent_completed}">
 			</td>
  		</tr>
 		<tr>
-			<th>{t}durata{/t}:</th>
+			<th>{t}duration{/t}:</th>
 			<td>
 				<input type="text" name="data[duration]" value="{if !empty($object.duration)}{$object.duration/60}{/if}" />
 			</td>
@@ -124,12 +128,6 @@ $(document).ready(function(){
 	
 </fieldset>
 
-{assign_associative var="params" containerId='attachContainer' collection="true" relation='attach' title='Attachments'}
-{$view->element("form_file_list", $params)}
-
-{assign_associative var=available_rel 0="seeTicket" 1="ticketRelated"}
-{assign_associative var="params" object_type_id=$objectTypeId availabeRelations=$available_rel}
-{$view->element("form_assoc_objects", $params)}
 
 <div class="tab"><h2>{t}Users and time{/t}</h2></div>
 
@@ -137,24 +135,31 @@ $(document).ready(function(){
 				
 	<table class="bordered">
 		<tr>
-			<td>
+			<td style="width:150px">
 			
-				<input type="button" class="modalbutton" name="edit" value=" {t}assigned to: {/t}  "
-					rel="{$html->url('/tickets/showUsers')}{if !empty($object)}/{$object.id}{/if}"
-					title="USERS : select user(s) to assign ticket" />
+			<input type="button" class="modalbutton" name="edit" 
+			{if !empty($object.User)}
+				value=" {t}assigned to: {/t}  "
+			{else}
+				value=" {t}click to assign ticket {/t}  "
+			{/if}
+				rel="{$html->url('/tickets/showUsers')}{if !empty($object)}/{$object.id}{/if}"
+				title="USERS : select user(s) to assign ticket" />
 
 			</td>
 			<td colspan="4">
-				<span id="usersAssignDiv">
-					{if !empty($object.User)}
-					{foreach from=$object.User item='u' name='user'}{$u.userid}{if !$smarty.foreach.user.last},{/if}{/foreach}
-					{/if}
-				</span>
+				<ul id="usersAssignDiv">
+				{if !empty($object.User)}
+					{foreach from=$object.User item='u' name='user'}
+					<li>{$u.userid}</li>
+					{/foreach}
+				{/if}
+				</ul>
 				<input type="hidden" id="usersAssign" name="data[users]" value="{if !empty($object.User)}{foreach from=$object.User item='u' name='user'}{$u.id}{if !$smarty.foreach.user.last},{/if}{/foreach}{/if}"/>
 			</td>
 
 		</tr>
-	
+		{if !empty($object)}
 		<tr>
 			<th>{t}created on{/t}:</th>
 			<td>{$object.created|date_format:$conf->dateTimePattern}</td>
@@ -167,10 +172,17 @@ $(document).ready(function(){
 			<th style="white-space:nowrap">{t}by{/t}:</th>
 			<td>{$object.UserModified.realname|default:''} [ {$object.UserModified.userid|default:''} ]</td>
 		</tr>
-		
+		{/if}
 	</table>
 	
 </fieldset>
+
+{assign_associative var="params" containerId='attachContainer' collection="true" relation='attach' title='Attachments'}
+{$view->element("form_file_list", $params)}
+
+{assign_associative var=available_rel 0="seeTicket" 1="ticketRelated"}
+{assign_associative var="params" object_type_id=$objectTypeId availabeRelations=$available_rel}
+{$view->element("form_assoc_objects", $params)}
 
 </form>
 

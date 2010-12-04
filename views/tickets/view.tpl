@@ -14,7 +14,7 @@
 {literal}
 <script type="text/javascript">
     $(document).ready(function(){	
-		openAtStart("#title,#long_desc_langs_container");
+		openAtStart("#title,#properties");
     });
 </script>
 {/literal}

@@ -101,11 +101,12 @@ $(document).ready(function(){
 			<th>{$beToolbar->order('title', 'title')}</th>
 			<th style="text-align:center">{$beToolbar->order('id', 'id')}</th>
 			<th style="text-align:center">{$beToolbar->order('ticket_status', 'status')}</th>
-			<th>{$beToolbar->order('created', 'created')}</th>
+			<!-- <th>{$beToolbar->order('created', 'created')}</th> -->
 			<th>{$beToolbar->order('userid', 'reporter')}</th>
 			<th>{$beToolbar->order('modified', 'last modified')}</th>
 			<th>{$beToolbar->order('severity','severity')}</th>
 			<th>{$beToolbar->order('num_of_editor_note', 'replies')}</th>
+			<th>{$beToolbar->order('exp_resolution_date', 'expected')}</th>
 		</tr>
 		</thead>
 	{/capture}
@@ -148,15 +149,15 @@ $(document).ready(function(){
 			<td>
 				{$objects[i].id}	
 			</td>
-			<td style="text-align:center">{$objects[i].ticket_status}</td>
+			<td class="{$objects[i].ticket_status}" style="text-align:center">{$objects[i].ticket_status}</td>
 	
-			<td>{$objects[i].created|date_format:$conf->datePattern}</td>
+			<!-- <td>{$objects[i].created|date_format:$conf->datePattern}</td> -->
 			<td>{$objects[i].userid}</td>
-			<td>{$objects[i].modified|date_format:$conf->dateTimePattern}</td>
-			<td>{$objects[i].severity}</td>
+			<td nowrap>{$objects[i].modified|date_format:$conf->dateTimePattern}</td>
+			<td class="{$objects[i].severity}">{$objects[i].severity}</td>
 			<td>{if $objects[i].num_of_editor_note|default:''}<img src="{$html->webroot}img/iconNotes.gif" alt="notes" /> {$objects[i].num_of_editor_note|default:0}{/if}</td>
+			<td>{$objects[i].exp_resolution_date|date_format:$conf->datePattern}</td>
 		</tr>
-
 		
 		{sectionelse}
 		
