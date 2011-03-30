@@ -48,7 +48,7 @@ class TicketsController extends ModulesController {
 		if(!empty($this->data['hide_status_off'])) {
 			$filter["status"] = "<> 'off'";
 		}
-		$filter["object_user"] = "assigned";
+		//$filter["object_user"] = "assigned";
 		$filter["exp_resolution_date"] = "";
 		$filter["BEObject.user_created"] = (!empty($this->data['reporter'])) ? $this->data['reporter'] : "";
 		$filter["count_annotation"] = array("EditorNote");
