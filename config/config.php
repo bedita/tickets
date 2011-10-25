@@ -25,15 +25,15 @@
  */
 
 $config["objRelationType"] = array(
-	"seeTicket" => array(
-		"hidden" => false,
-		"left" 	 => array("ticket"),
-		"right"  => array("ticket")
-	),
 	"ticketRelated" => array(
 		"hidden" => false,
 		"left" 	 => array("ticket"),
 		"right"  => array("document", "event", "short_news", "image","video", "card")
+	),
+	"seeTicket" => array(
+		"hidden" => false,
+		"left" 	 => array("ticket"),
+		"right"  => array("ticket")
 	)
 );
 
