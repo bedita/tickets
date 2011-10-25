@@ -1,7 +1,7 @@
 <?php
 
 $config["ticketSeverity"] = array (
-	"critical", "major", "normal", "minor"
+	 "minor", "normal", "major", "critical",
 );
 
 $config["ticketStatus"] = array (
@@ -30,7 +30,7 @@ $config["ticketNewAssignementMsg"] = array(
 					"\n\n[\$author] has assigned to you the ticket #[\$id] " .
 					"\n\nview ticket here: [\$url]" .
 					"\n\n'[\$title]'" .
-					"\n\n<<[\$description]>>",
+					"\n\n<<[\$text]>>",
 );
 
 $config["ticketUnassignementMsg"] = array(
