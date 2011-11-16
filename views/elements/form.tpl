@@ -90,7 +90,7 @@ $(document).ready(function(){
 			<td colspan="4">
 				<select name="data[severity]" id="ticketSev">
 				{foreach item=sev from=$conf->ticketSeverity}
-					<option {if $sev==$object.severity}selected="selected"{/if} value="{$sev}">{$sev}</option>
+					<option {if $sev==$object.severity|default:'normal'}selected="selected"{/if} value="{$sev}">{$sev}</option>
 				{/foreach}
 				</select>
 			</td>
