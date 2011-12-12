@@ -6,7 +6,7 @@ $(document).ready(function(){
 	 * se NON c'è aggiunge al TR lo status "unread"
 	 * 
 	 */
-	
+	openAtStart("#ticketfilter");
 	
 	// uncheck closed ticket status if 'hide closed tickets' is selected
 	$("#filterHideClosed").change(function() {
