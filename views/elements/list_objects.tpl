@@ -104,7 +104,7 @@ $(document).ready(function(){
 			<!-- <th>{$beToolbar->order('created', 'created')}</th> -->
 			<th>{$beToolbar->order('userid', 'reporter')}</th>
 			<th>{$beToolbar->order('modified', 'last modified')}</th>
-		{*	<th>{t}assigned{/t}</th>  *}
+			<th>{t}assigned{/t}</th>
 			<th>{$beToolbar->order('severity','severity')}</th>
 			<th>{$beToolbar->order('num_of_editor_note', 'replies')}</th>
 			<th>{$beToolbar->order('exp_resolution_date', 'expected')}</th>
@@ -155,7 +155,15 @@ $(document).ready(function(){
 			<!-- <td>{$objects[i].created|date_format:$conf->datePattern}</td> -->
 			<td>{$objects[i].userid}</td>
 			<td nowrap>{$objects[i].modified|date_format:$conf->dateTimePattern}</td>
-	{*		<td>{$objects[i].obj_userid}</td>  *}
+			<td>
+				{if !empty($objects[i].UsersAssigned)}
+					<ul>
+					{foreach from=$objects[i].UsersAssigned item="u" name="assigned"}
+						<li>{$u.realname|default:$u.userid}</li>
+					{/foreach}
+					</ul>
+				{/if}
+			</td>
 			<td class="{$objects[i].severity}">{$objects[i].severity}</td>
 			<td>{if $objects[i].num_of_editor_note|default:''}<img src="{$html->webroot}img/iconNotes.gif" alt="notes" /> {$objects[i].num_of_editor_note|default:0}{/if}</td>
 			<td>{$objects[i].exp_resolution_date|date_format:$conf->datePattern}</td>

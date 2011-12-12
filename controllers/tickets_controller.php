@@ -43,23 +43,41 @@ class TicketsController extends ModulesController {
 		if(!empty($this->data['status'])) {
 			$filter["Ticket.ticket_status"] = array_keys($this->data['status']);
 		} else {
-			$filter["Ticket.ticket_status"] = "";
+			$ticketStatus = array_intersect($conf->ticketStatus, array("draft", "on"));
+			$filter["Ticket.ticket_status"] = array_keys($ticketStatus);
 		}
-		if(!empty($this->data['hide_status_off'])) {
+		if(empty($this->data) || !empty($this->data['hide_status_off'])) {
 			$filter["status"] = "<> 'off'";
 		}
-		//$filter["object_user"] = "assigned";
+		
+		if (!empty($this->data['assigned_to'])) {
+			$filter["ObjectUser.switch"] = "assigned";
+			$filter["ObjectUser.user_id"] = $this->data['assigned_to'];
+		}
+		
 		$filter["exp_resolution_date"] = "";
 		$filter["BEObject.user_created"] = (!empty($this->data['reporter'])) ? $this->data['reporter'] : "";
 		$filter["count_annotation"] = array("EditorNote");
 		$f = $filter;
-		$this->paginatedList($id, $filter, $order, $dir, $page, $dim);
+		$this->paginatedList($id, $filter, $order, $dir, $page, $dim);		
 		$this->loadCategories($filter["object_type_id"]);
 		$this->loadReporters();
-		if(!empty($this->data['status'])) $f["f_status"] = $this->data['status'];
-		if(!empty($this->data['reporter'])) $f["f_reporter"] = $this->data['reporter'];
-		if(!empty($this->data['severity'])) $f["f_severity"] = $this->data['severity'];
-		if(!empty($this->data['hide_status_off'])) $f["hide_status_off"] = "true";
+		$this->loadAssignedUsers();
+		if(!empty($this->data['status'])) {
+			$f["f_status"] = $this->data['status'];
+		}
+		if(!empty($this->data['reporter'])) {
+			$f["f_reporter"] = $this->data['reporter'];
+		}
+		if(!empty($this->data['severity'])) {
+			$f["f_severity"] = $this->data['severity'];
+		}
+		if(empty($this->data) || !empty($this->data['hide_status_off'])) {
+			$f["hide_status_off"] = "true";
+		}
+		if (!empty($this->data['assigned_to'])) {
+			$f["f_assigned_to"] = $this->data['assigned_to'];
+		}
 		$this->set("filter",$f);
 	}
 
@@ -312,6 +330,49 @@ class TicketsController extends ModulesController {
 		$this->Transaction->commit();
 		$this->userInfoMessage(__("Category deleted", true) . " -  " . $this->data["label"]);
 		$this->eventInfo("Category " . $this->data["id"] . "-" . $this->data["label"] . " deleted");
+	}
+	
+	/**
+	 * load all users with at least one ticket assigned and
+	 * load users assigned foreach ticket 
+	 */
+	protected function loadAssignedUsers() {
+		$objectUser = ClassRegistry::init("ObjectUser");
+		
+		// load all users with a ticket assigned
+		$all_users_id = $objectUser->find("list", array(
+			"fields" => "user_id",
+			"conditions" => array("switch" => "assigned")
+		));
+		$all_users = ClassRegistry::init("User")->find("all", array(
+			"conditions" => array("User.id" => $all_users_id),
+			"recursive" => -1
+		));
+		$this->set("assignedUsers", $all_users);
+		
+		// load specific tickets assignment
+		if (!empty($this->viewVars["objects"])) {
+			foreach ($this->viewVars["objects"] as &$object) {
+				$users_id = $objectUser->find("list", array(
+					"fields" => "user_id",
+					"conditions" => array(
+						"switch" => "assigned",
+						"object_id" => $object["id"]
+					)
+				));
+				
+				$users = ClassRegistry::init("User")->find("all", array(
+					"conditions" => array("User.id" => $users_id),
+					"recursive" => -1
+				));
+				
+				if (empty($users)) {
+					$users = array();
+				}
+				
+				$object["UsersAssigned"] = Set::classicExtract($users, '{n}.User');
+			}
+		}
 	}
 
 	private function loadReporters() {
