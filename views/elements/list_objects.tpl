@@ -159,7 +159,7 @@ $(document).ready(function(){
 				{if !empty($objects[i].UsersAssigned)}
 					<ul>
 					{foreach from=$objects[i].UsersAssigned item="u" name="assigned"}
-						<li>{$u.realname|default:$u.userid}</li>
+						<li>{$u.userid}</li>
 					{/foreach}
 					</ul>
 				{/if}

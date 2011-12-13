@@ -21,7 +21,7 @@
 		<select name="data[reporter]" class="filterTicket">
 			<option value="">all</option>
 			{foreach item=reporter key='key' from=$reporters}
-			<option value="{$key}" {if (!empty($filter.f_reporter) && ($filter.f_reporter == $key))}selected="selected"{/if}>{$reporter}</option>
+			<option value="{$reporter.User.id}" {if (!empty($filter.f_reporter) && ($filter.f_reporter == $reporter.User.id))}selected="selected"{/if}>{$reporter.User.userid}</option>
 			{/foreach}
 		</select>
 		
@@ -29,7 +29,7 @@
 		<select name="data[assigned_to]" class="filterTicket">
 			<option value="">all</option>
 			{foreach item=user key='key' from=$assignedUsers}
-			<option value="{$user.User.id}" {if !empty($filter.f_assigned_to) && $filter.f_assigned_to == $user.User.id}selected="selected"{/if}>{$user.User.realname|default:$user.User.userid}</option>
+			<option value="{$user.User.id}" {if !empty($filter.f_assigned_to) && $filter.f_assigned_to == $user.User.id}selected="selected"{/if}>{$user.User.userid}</option>
 			{/foreach}
 		</select>
 		

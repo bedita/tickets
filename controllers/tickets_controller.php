@@ -375,12 +375,19 @@ class TicketsController extends ModulesController {
 		}
 	}
 
-	private function loadReporters() {
-		$reporters = array();
-		$data = $this->viewVars["objects"];
-		foreach($data as $k => $v) {
-			$reporters[$v['user_created']] = $v['userid'];
-		}
+	/**
+	 * load all reporters
+	 */
+	protected function loadReporters() {
+		$users_id = ClassRegistry::init("BEObject")->find('list', array(
+			'fields' => 'user_created',
+			'conditions' => array("object_type_id" => Configure::read('objectTypes.ticket.id'))
+		));
+		$users_id = array_unique($users_id);
+		$reporters = ClassRegistry::init("User")->find("all", array(
+			"conditions" => array('id' => $users_id),
+			'recursive' => -1
+		));
 		$this->set("reporters",$reporters);
 	}
 
