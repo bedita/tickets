@@ -7,7 +7,7 @@
 		{foreach item=sta key='key' from=$conf->ticketStatus}
 		{if $sta!=$prevsta}</fieldset><fieldset style="display:inline; border-left:1px solid gray; 
 		padding:5px 10px 5px 10px">{/if}
-			<input type="checkbox" value="{$key}" name="data[status][{$key}]" class="filterTicket" rel="{$sta}" id="status_{$key}" {if !empty($filter.f_status.$key) || $sta != "off"}checked="checked"{/if}/> 
+			<input type="checkbox" value="{$key}" name="data[status][{$key}]" class="filterTicket" rel="{$sta}" id="status_{$key}" {if (empty($filter.f_status) && $sta != "off") || !empty($filter.f_status[$key])}checked="checked"{/if}/> 
 			{t}{$key}{/t}&nbsp;
 			{assign var="prevsta" value=$sta}	
 		{/foreach}
