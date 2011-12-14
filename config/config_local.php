@@ -13,6 +13,7 @@ $config["ticketStatus"] = array (
 	"resolved" => "off",
 	"unresolvable" => "off",
 	"obsolete" => "off",
+	"duplicate" => "off"
 );
 
 // define groups for ticket assignement, default backend authorized groups 
