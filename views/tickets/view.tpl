@@ -1,7 +1,8 @@
 {*
 ** view template
 *}
-{$html->css("ui.datepicker", null, null, false)}
+{assign_associative var="params" inline="false"}
+{$html->css("ui.datepicker", null, $params)}
 {$javascript->link("jquery/jquery.form", false)}
 {$javascript->link("jquery/jquery.selectboxes.pack", false)}
 {$javascript->link("jquery/ui/jquery.ui.sortable", true)}

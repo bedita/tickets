@@ -113,8 +113,8 @@ class TicketsController extends ModulesController {
 
 		// remove and create obj/user assignement
 		$objectUserModel = ClassRegistry::init("ObjectUser");
-		$prevUsers = $objectUserModel->findAll(array("object_id" => $this->Ticket->id, 
-			"switch" => "assigned"));
+		$prevUsers = $objectUserModel->find('all', array("conditions" => array("object_id" => $this->Ticket->id, 
+			"switch" => "assigned")));
 		$objectUserModel->deleteAll(array("object_id" => $this->Ticket->id, 
 			"switch" => "assigned"));
 		$users = array();
