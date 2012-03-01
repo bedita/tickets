@@ -6,6 +6,7 @@ $config["ticketSeverity"] = array (
 
 $config["ticketStatus"] = array (
 	"new" => "draft",
+	"reopened" => "draft",
 	"assigned" => "on",
 	"analysis" => "on",
 	"development" => "on",
