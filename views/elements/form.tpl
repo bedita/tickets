@@ -187,3 +187,5 @@ $(document).ready(function(){
 </form>
 
 {$view->element("ticket_thread")}
+
+{$view->element('form_versions')}

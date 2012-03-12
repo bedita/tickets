@@ -29,22 +29,25 @@ class Ticket extends BEAppObjectModel {
 		"ticket_status" => 6, "severity" => 6);
 
 	public $objectTypesGroups = array("related");
+	
+	public $actsAs = array();
 
-		protected $modelBindings = array( 
-				"detailed" =>  array("BEObject" => array("ObjectType", 
-															"UserCreated", 
-															"UserModified", 
-															"ObjectProperty",
-															"RelatedObject",
-															"Annotation",
-															"Category",
-															"User"
-															)),
-				"default" => array("BEObject" => array("ObjectProperty", 
-									"ObjectType", "Annotation",
-									"Category", "RelatedObject","User" )),
+	protected $modelBindings = array( 
+			"detailed" =>  array("BEObject" => array("ObjectType", 
+														"UserCreated", 
+														"UserModified", 
+														"ObjectProperty",
+														"RelatedObject",
+														"Annotation",
+														"Category",
+														"User",
+														"Version" => array("User.realname", "User.userid")
+														)),
+			"default" => array("BEObject" => array("ObjectProperty", 
+								"ObjectType", "Annotation",
+								"Category", "RelatedObject","User" )),
 
-				"minimum" => array("BEObject" => array("ObjectType"))		
+			"minimum" => array("BEObject" => array("ObjectType"))		
 	);
 	
 	function beforeValidate() {
