@@ -1,3 +1,11 @@
+{literal}
+<script type="text/javascript">
+    $(document).ready(function(){	
+    	openAtStart("#ticketfilter");
+    });
+</script>
+{/literal}
+
 {$view->element("modulesmenu")}
 
 {assign_associative var="params" method="index"}
