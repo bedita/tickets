@@ -1,0 +1,28 @@
+
+.obj.unread * {font-weight:bold}
+
+.editornotes {
+	background-color: #ffffff;
+	color:#000 !important;
+	font-size:1em !important;
+	width: 100%;
+	font-family: "Helvetica Neue","Helvetica","Arial",sans-serif;
+}
+
+/* ticketSeverity colors */
+
+.critical {color:#cc0000}
+.major {}
+.normal {}
+.minor {}
+
+/* ticketStatus colors */
+
+.new {color:#ffff00}
+.assigned{}
+.analysis{}
+.development{}
+.test{}
+.resolved {color:#339900 !important;}
+.unresolvable {}
+.obsolete {}
