@@ -41,6 +41,12 @@ $(document).ready(function(){
 	{$javascript->link("wymeditor/jquery.wymeditor.pack", false)}
 	{$javascript->link("wymeditor/wymeditor_default_init", false)}
 
+{elseif ($conf->ckeditor|default:false)}
+
+	{$javascript->link("ckeditor/ckeditor", false)}
+	{$javascript->link("ckeditor/adapters/jquery", false)}
+	{$javascript->link("ckeditor/ckeditor_default_init", false)}
+
 {/if}
 
 
