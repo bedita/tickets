@@ -344,10 +344,13 @@ class TicketsController extends ModulesController {
 			"fields" => "user_id",
 			"conditions" => array("switch" => "assigned")
 		));
-		$all_users = ClassRegistry::init("User")->find("all", array(
-			"conditions" => array("User.id" => $all_users_id),
-			"recursive" => -1
-		));
+		$all_users = array();
+		if(!empty($all_users_id)) {
+			$all_users = ClassRegistry::init("User")->find("all", array(
+				"conditions" => array("User.id" => $all_users_id),
+				"recursive" => -1
+			));
+		}
 		$this->set("assignedUsers", $all_users);
 		
 		// load specific tickets assignment
@@ -361,13 +364,12 @@ class TicketsController extends ModulesController {
 					)
 				));
 				
-				$users = ClassRegistry::init("User")->find("all", array(
-					"conditions" => array("User.id" => $users_id),
-					"recursive" => -1
-				));
-				
-				if (empty($users)) {
-					$users = array();
+				$users = array();
+				if(!empty($users_id)) {
+					$users = ClassRegistry::init("User")->find("all", array(
+						"conditions" => array("User.id" => $users_id),
+						"recursive" => -1
+					));
 				}
 				
 				$object["UsersAssigned"] = Set::classicExtract($users, '{n}.User');
@@ -384,10 +386,13 @@ class TicketsController extends ModulesController {
 			'conditions' => array("object_type_id" => Configure::read('objectTypes.ticket.id'))
 		));
 		$users_id = array_unique($users_id);
-		$reporters = ClassRegistry::init("User")->find("all", array(
-			"conditions" => array('id' => $users_id),
-			'recursive' => -1
-		));
+		$reporters = array();			
+		if(!empty($users_id)) {
+			$reporters = ClassRegistry::init("User")->find("all", array(
+				"conditions" => array('id' => $users_id),
+				'recursive' => -1
+			));
+		}
 		$this->set("reporters",$reporters);
 	}
 
