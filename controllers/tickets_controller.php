@@ -292,31 +292,29 @@ class TicketsController extends ModulesController {
 				)
 			);
 
-		$assigned = array();	
-		if(!empty($id)) {
+		$usersList = array();
+		$switch = (!empty($this->params["named"]["relation"]))? $this->params["named"]["relation"] : "assigned";
+		if (!empty($id)) {
 			$objectUserModel = ClassRegistry::init("ObjectUser");
-			$result = $objectUserModel->find("all", array(
-						"conditions" => array("object_id" => $id, "switch" => "assigned"),
-						"fields" => "user_id",
+			$usersList = $objectUserModel->find("list", array(
+						"conditions" => array("object_id" => $id, "switch" => $switch),
+						"fields" => array("ObjectUser.user_id"),
 					)
 			);
-			foreach ($result as $r) {
-				$assigned[] = $r["ObjectUser"]["user_id"];
-			}
-			
 		}
-			
-		foreach($users as $k=>$u) {
-			if(empty($u["Group"])) {
+
+		foreach ($users as $k => $u) {
+			if (empty($u["Group"])) {
 				unset($users[$k]);
 			} else {
-				if(in_array($u["User"]["id"], $assigned)) {
-					$users[$k]["User"]["assigned"] = true;
+				if (in_array($u["User"]["id"], $usersList)) {
+					$users[$k]["User"]["related"] = true;
 				}
 			}
 		}
 
 		$this->set('users', $users);
+		$this->set('relation', $switch);
 		$this->layout = null;
 	}
 
