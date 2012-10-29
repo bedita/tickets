@@ -83,6 +83,7 @@ class TicketsController extends ModulesController {
 
 	public function view($id = null) {
 		$this->viewObject($this->Ticket, $id);
+		$this->viewVars['object']['User'] = Set::combine($this->viewVars['object'], 'User.{n}.id', 'User.{n}', 'User.{n}.ObjectUser.switch');
 		$this->set("objectTypeId", Configure::read("objectTypes.ticket.id"));
 	}
 	
