@@ -4,10 +4,11 @@
 {literal}
 <script type="text/javascript">
 function relateTicketToUsers(ids,users,userTicketRelation) {
-	var div = '#users' + userTicketRelation.charAt(0).toUpperCase() + userTicketRelation.slice(1) + 'Div';
-	$(div).val(ids);
-	$(div).html(users);
-	$(div).show();
+	var inputData = '#users' + userTicketRelation.charAt(0).toUpperCase() + userTicketRelation.slice(1);
+	var container =  inputData + 'Container';
+	$(inputData).val(ids);
+	$(container).html(users);
+	$(container).show();
 }
 
 var ts = {{/literal}{foreach item='val' key='key' from=$conf->ticketStatus}"{$key}":"{$val}",{/foreach}"":""{literal}}{/literal}
@@ -20,7 +21,7 @@ $(document).ready(function(){
 });
 </script>
 <style>
-	#usersAssignDiv LI {display:inline; padding:4px 5px 4px 5px; width:auto; list-style:disc}
+	#usersAssignedDiv LI {display:inline; padding:4px 5px 4px 5px; width:auto; list-style:disc}
 </style>
 {/literal}
 
@@ -154,7 +155,7 @@ $(document).ready(function(){
 
 			</td>
 			<td colspan="4">
-				<ul id="usersAssignedDiv">
+				<ul id="usersAssignedContainer">
 				{if !empty($object.User.assigned)}
 					{foreach from=$object.User.assigned item='u' name='user'}
 					<li>{$u.userid}</li>
@@ -175,7 +176,7 @@ $(document).ready(function(){
 
 			</td>
 			<td colspan="4">
-				<ul id="usersNotifyDiv">
+				<ul id="usersNotifyContainer">
 				{if !empty($object.User.notify)}
 					{foreach from=$object.User.notify item='u' name='user'}
 					<li>{$u.userid}</li>

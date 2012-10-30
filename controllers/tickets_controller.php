@@ -112,34 +112,47 @@ class TicketsController extends ModulesController {
 		}
 		$this->saveObject($this->Ticket);
 
-		// remove and create obj/user assignement
+		// remove and create obj/user assignement/notification
 		$objectUserModel = ClassRegistry::init("ObjectUser");
-		$prevUsers = $objectUserModel->find('all', array("conditions" => array("object_id" => $this->Ticket->id, 
-			"switch" => "assigned")));
-		$objectUserModel->deleteAll(array("object_id" => $this->Ticket->id, 
-			"switch" => "assigned"));
-		$users = array();
-		if(!empty($this->data["users"])) {
-			$users = explode(",",$this->data["users"]);
-			foreach($users as $user_id) {
-				$objectUserModel->create();
-				$objectUserModel->save(array("user_id"=>trim($user_id), 
-					"object_id" => $this->Ticket->id, "switch" => "assigned"));
+		$notifyParams = array(
+			"assignedUsers" => array(),
+			"prevAssignedUsers" => array(),
+			"notifyUsers" => array(),
+			"prevNotifyUsers" => array(),
+			"prevNumRev" => $numRev
+		);
+		foreach ($this->data["users"] as $switch => $usersList) {
+			$notifyParams["prev" . ucfirst($switch) . "Users"] = $objectUserModel->find('list', array(
+				"conditions" => array(
+					"object_id" => $this->Ticket->id, 
+					"switch" => $switch
+				),
+				"fields" => "user_id"
+			));
+			$objectUserModel->deleteAll(array(
+				"object_id" => $this->Ticket->id, 
+				"switch" => $switch
+			));
+			if(!empty($usersList)) {
+				$notifyParams[$switch . "Users"] = explode(",", $usersList);
+				foreach($notifyParams[$switch . "Users"] as $user_id) {
+					$objectUserModel->create();
+					$objectUserModel->save(array(
+						"user_id"=>trim($user_id),
+						"object_id" => $this->Ticket->id, 
+						"switch" => $switch
+					));
+				}
 			}
 		}
-		// notify users
-		$prev = array();
-		foreach($prevUsers as $u) {
-			$prev[] = $u["ObjectUser"]["user_id"];
-		}
-		$this->notify($users, $prev, $numRev);
+		$this->notify($notifyParams);
 	 	$this->Transaction->commit() ;
  		$this->userInfoMessage(__("Ticket saved", true)." - ".$this->data["title"]);
 		$this->eventInfo("ticket [". $this->data["title"]."] saved");
 	}
 
-	protected function notify(array& $assignedUsers, array& $prevUsers, $prevNumRev) {
-		
+	protected function notify(array &$notifyParams) {
+		extract($notifyParams);
 		$auth = $this->BeAuth->user["userid"];
 		$authId = $this->BeAuth->user["id"];
 		$ticketId = $this->Ticket->id;
@@ -151,7 +164,7 @@ class TicketsController extends ModulesController {
 			"beditaUrl" => Configure::read("beditaUrl"),
 		);
 		// verify new assignements, and removed assignement
-		$newAssigned = array_diff($assignedUsers, $prevUsers);
+		$newAssigned = array_diff($assignedUsers, $prevAssignedUsers);
 		$k = array_search($authId, $newAssigned);
 		if($k !== false) {
 			array_splice($newAssigned, $k, 1);
@@ -159,7 +172,7 @@ class TicketsController extends ModulesController {
 		if(!empty($newAssigned)) {
 			$this->createMailJob($newAssigned, "ticketNewAssignementMsg", $params);
 		}
-		$unAssigned = array_diff($prevUsers, $assignedUsers);
+		$unAssigned = array_diff($prevAssignedUsers, $assignedUsers);
 		$k = array_search($authId, $unAssigned);
 		if($k !== false) {
 			array_splice($unAssigned, $k, 1);
@@ -168,7 +181,7 @@ class TicketsController extends ModulesController {
 			$this->createMailJob($unAssigned, "ticketUnassignementMsg", $params);
 		}
 		// notify other changes to already assigned users
-		$changeNotifyUsers = array_intersect($assignedUsers, $prevUsers);
+		$changeNotifyUsers = array_intersect($assignedUsers, $prevAssignedUsers);
 		$k = array_search($authId, $changeNotifyUsers);
 		if($k !== false) {
 			array_splice($changeNotifyUsers, $k, 1);
