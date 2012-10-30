@@ -20,9 +20,6 @@ $(document).ready(function(){
 	});
 });
 </script>
-<style>
-	#usersAssignedDiv LI {display:inline; padding:4px 5px 4px 5px; width:auto; list-style:disc}
-</style>
 {/literal}
 
 
@@ -155,7 +152,7 @@ $(document).ready(function(){
 
 			</td>
 			<td colspan="4">
-				<ul id="usersAssignedContainer">
+				<ul id="usersAssignedContainer" class="users-relations">
 				{if !empty($object.User.assigned)}
 					{foreach from=$object.User.assigned item='u' name='user'}
 					<li>{$u.userid}</li>
@@ -176,7 +173,7 @@ $(document).ready(function(){
 
 			</td>
 			<td colspan="4">
-				<ul id="usersNotifyContainer">
+				<ul id="usersNotifyContainer" class="users-relations">
 				{if !empty($object.User.notify)}
 					{foreach from=$object.User.notify item='u' name='user'}
 					<li>{$u.userid}</li>
