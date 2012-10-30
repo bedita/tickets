@@ -259,8 +259,8 @@ class TicketsController extends ModulesController {
 						"subject" => $subject,
 						"signature" => $conf->mailOptions["signature"]
 			));
-
 			$data["mail_body"] = $this->getNotifyText($msgType, "mail_body", $params);
+
 			// skip creation if a duplicate mail is already present
 			$res = $jobModel->find("all", array(
 				"conditions" => array("recipient" => $data["recipient"], "status" => $data["status"],
@@ -281,6 +281,12 @@ class TicketsController extends ModulesController {
 		$t = Configure::read($msgType);
 		if(!empty($t) && !empty($t[$field])) {
 			$text = $t[$field];
+			if ($field == "subject") {
+				$projectName = Configure::read('projectName');
+				if (!empty($projectName)) {
+					$text = str_replace("[BEdita]", "[$projectName]", $text);
+				}
+			}
 			$replaceFields = array("user", "id", "author", "title", "text", "url", "beditaUrl", "changedFields");
 			foreach ($replaceFields as $f) {
 				if(!empty($params[$f])) {
@@ -288,6 +294,7 @@ class TicketsController extends ModulesController {
 					$text = str_replace($plHolder , $params[$f], $text);
 				}
 			}
+
 		}
 		return $text;
 	}
