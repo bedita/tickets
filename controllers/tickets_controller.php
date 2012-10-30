@@ -180,8 +180,29 @@ class TicketsController extends ModulesController {
 		if(!empty($unAssigned)) {
 			$this->createMailJob($unAssigned, "ticketUnassignementMsg", $params);
 		}
+
+		// verify new notify, and removed notify
+		$newNotify = array_diff($notifyUsers, $prevNotifyUsers);
+		$k = array_search($authId, $newNotify);
+		if($k !== false) {
+			array_splice($newNotify, $k, 1);
+		}
+		if(!empty($newNotify)) {
+			$this->createMailJob($newNotify, "ticketAddNotifyMsg", $params);
+		}
+		$removeNotify = array_diff($prevNotifyUsers, $notifyUsers);
+		$k = array_search($authId, $removeNotify);
+		if($k !== false) {
+			array_splice($removeNotify, $k, 1);
+		}
+		if(!empty($removeNotify)) {
+			$this->createMailJob($removeNotify, "ticketRemoveNotifyMsg", $params);
+		}
+
 		// notify other changes to already assigned users
-		$changeNotifyUsers = array_intersect($assignedUsers, $prevAssignedUsers);
+		$assignedUsersToNotifyChanges = array_intersect($assignedUsers, $prevAssignedUsers);
+		$notifyUsersToNotifyChanges = array_intersect($notifyUsers, $prevNotifyUsers);
+		$changeNotifyUsers = array_unique(array_merge($assignedUsersToNotifyChanges, $notifyUsersToNotifyChanges));
 		$k = array_search($authId, $changeNotifyUsers);
 		if($k !== false) {
 			array_splice($changeNotifyUsers, $k, 1);
