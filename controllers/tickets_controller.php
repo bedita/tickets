@@ -1,40 +1,40 @@
 <?php
 /*-----8<--------------------------------------------------------------------
- * 
+ *
  * BEdita - a semantic content management framework
- * 
+ *
  * Copyright 2008 ChannelWeb Srl, Chialab Srl
- * 
+ *
  * This file is part of BEdita: you can redistribute it and/or modify
- * it under the terms of the Affero GNU General Public License as published 
- * by the Free Software Foundation, either version 3 of the License, or 
+ * it under the terms of the Affero GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * BEdita is distributed WITHOUT ANY WARRANTY; without even the implied 
+ * BEdita is distributed WITHOUT ANY WARRANTY; without even the implied
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the Affero GNU General Public License for more details.
- * You should have received a copy of the Affero GNU General Public License 
+ * You should have received a copy of the Affero GNU General Public License
  * version 3 along with BEdita (see LICENSE.AGPL).
  * If not, see <http://gnu.org/licenses/agpl-3.0.html>.
- * 
+ *
  *------------------------------------------------------------------->8-----
  */
 
 /**
- * tickets controller class 
- * 
+ * tickets controller class
+ *
  *
  */
 class TicketsController extends ModulesController {
-	
+
 	public $uses = array("Ticket", "User", "Group");
 	var $helpers 	= array('BeTree', 'BeToolbar');
-	
+
 	protected $moduleName = 'tickets';
 
 	protected function beditaBeforeFilter() {
 		BeLib::getObject('BeConfigure')->loadPluginLocalConfig($this->moduleName);
 	}
-	
+
 	public function index($id = null, $order = "", $dir = true, $page = 1, $dim = 20) {
 		$conf  = Configure::getInstance() ;
 		$filter["object_type_id"] = array($conf->objectTypes['ticket']["id"]);
@@ -49,17 +49,17 @@ class TicketsController extends ModulesController {
 		if(empty($this->data) || !empty($this->data['hide_status_off'])) {
 			$filter["status"] = "<> 'off'";
 		}
-		
+
 		if (!empty($this->data['assigned_to'])) {
 			$filter["ObjectUser.switch"] = "assigned";
 			$filter["ObjectUser.user_id"] = $this->data['assigned_to'];
 		}
-		
+
 		$filter["exp_resolution_date"] = "";
 		$filter["BEObject.user_created"] = (!empty($this->data['reporter'])) ? $this->data['reporter'] : "";
 		$filter["count_annotation"] = array("EditorNote");
 		$f = $filter;
-		$this->paginatedList($id, $filter, $order, $dir, $page, $dim);		
+		$this->paginatedList($id, $filter, $order, $dir, $page, $dim);
 		$this->loadCategories($filter["object_type_id"]);
 		$this->loadReporters();
 		$this->loadAssignedUsers();
@@ -83,23 +83,24 @@ class TicketsController extends ModulesController {
 
 	public function view($id = null) {
 		$this->viewObject($this->Ticket, $id);
+		$this->viewVars['object']['User'] = Set::combine($this->viewVars['object'], 'User.{n}.id', 'User.{n}', 'User.{n}.ObjectUser.switch');
 		$this->set("objectTypeId", Configure::read("objectTypes.ticket.id"));
 	}
-	
+
 	public function delete() {
 		$this->checkWriteModulePermission();
 		$objectsListDeleted = $this->deleteObjects("Ticket");
 		$this->userInfoMessage(__("Ticket deleted", true) . " -  " . $objectsListDeleted);
 		$this->eventInfo("ticket $objectsListDeleted deleted");
 	}
-	
+
 	public function deleteSelected() {
 		$this->checkWriteModulePermission();
 		$objectsListDeleted = $this->deleteObjects("Ticket");
 		$this->userInfoMessage(__("Ticket", true) . " -  " . $objectsListDeleted);
 		$this->eventInfo("Ticket $objectsListDeleted deleted");
 	}
-	
+
 	public function save() {
 		$this->checkWriteModulePermission();
 		$this->Transaction->begin();
@@ -111,34 +112,47 @@ class TicketsController extends ModulesController {
 		}
 		$this->saveObject($this->Ticket);
 
-		// remove and create obj/user assignement
+		// remove and create obj/user assignement/notification
 		$objectUserModel = ClassRegistry::init("ObjectUser");
-		$prevUsers = $objectUserModel->find('all', array("conditions" => array("object_id" => $this->Ticket->id, 
-			"switch" => "assigned")));
-		$objectUserModel->deleteAll(array("object_id" => $this->Ticket->id, 
-			"switch" => "assigned"));
-		$users = array();
-		if(!empty($this->data["users"])) {
-			$users = explode(",",$this->data["users"]);
-			foreach($users as $user_id) {
-				$objectUserModel->create();
-				$objectUserModel->save(array("user_id"=>trim($user_id), 
-					"object_id" => $this->Ticket->id, "switch" => "assigned"));
+		$notifyParams = array(
+			"assignedUsers" => array(),
+			"prevAssignedUsers" => array(),
+			"notifyUsers" => array(),
+			"prevNotifyUsers" => array(),
+			"prevNumRev" => $numRev
+		);
+		foreach ($this->data["users"] as $switch => $usersList) {
+			$notifyParams["prev" . ucfirst($switch) . "Users"] = $objectUserModel->find('list', array(
+				"conditions" => array(
+					"object_id" => $this->Ticket->id,
+					"switch" => $switch
+				),
+				"fields" => "user_id"
+			));
+			$objectUserModel->deleteAll(array(
+				"object_id" => $this->Ticket->id,
+				"switch" => $switch
+			));
+			if(!empty($usersList)) {
+				$notifyParams[$switch . "Users"] = explode(",", $usersList);
+				foreach($notifyParams[$switch . "Users"] as $user_id) {
+					$objectUserModel->create();
+					$objectUserModel->save(array(
+						"user_id"=>trim($user_id),
+						"object_id" => $this->Ticket->id,
+						"switch" => $switch
+					));
+				}
 			}
 		}
-		// notify users
-		$prev = array();
-		foreach($prevUsers as $u) {
-			$prev[] = $u["ObjectUser"]["user_id"];
-		}
-		$this->notify($users, $prev, $numRev);
+		$this->notify($notifyParams);
 	 	$this->Transaction->commit() ;
  		$this->userInfoMessage(__("Ticket saved", true)." - ".$this->data["title"]);
 		$this->eventInfo("ticket [". $this->data["title"]."] saved");
 	}
 
-	protected function notify(array& $assignedUsers, array& $prevUsers, $prevNumRev) {
-		
+	protected function notify(array &$notifyParams) {
+		extract($notifyParams);
 		$auth = $this->BeAuth->user["userid"];
 		$authId = $this->BeAuth->user["id"];
 		$ticketId = $this->Ticket->id;
@@ -146,11 +160,11 @@ class TicketsController extends ModulesController {
 			"title" => $this->data["title"],
 			"id" => $ticketId,
 			"url" => Configure::read("beditaUrl") . "/view/" . $ticketId,
-			"text" => $this->data["description"],
+			"text" => strip_tags($this->data["description"]),
 			"beditaUrl" => Configure::read("beditaUrl"),
 		);
 		// verify new assignements, and removed assignement
-		$newAssigned = array_diff($assignedUsers, $prevUsers);
+		$newAssigned = array_diff($assignedUsers, $prevAssignedUsers);
 		$k = array_search($authId, $newAssigned);
 		if($k !== false) {
 			array_splice($newAssigned, $k, 1);
@@ -158,7 +172,7 @@ class TicketsController extends ModulesController {
 		if(!empty($newAssigned)) {
 			$this->createMailJob($newAssigned, "ticketNewAssignementMsg", $params);
 		}
-		$unAssigned = array_diff($prevUsers, $assignedUsers);
+		$unAssigned = array_diff($prevAssignedUsers, $assignedUsers);
 		$k = array_search($authId, $unAssigned);
 		if($k !== false) {
 			array_splice($unAssigned, $k, 1);
@@ -166,8 +180,29 @@ class TicketsController extends ModulesController {
 		if(!empty($unAssigned)) {
 			$this->createMailJob($unAssigned, "ticketUnassignementMsg", $params);
 		}
+
+		// verify new notify, and removed notify
+		$newNotify = array_diff($notifyUsers, $prevNotifyUsers);
+		$k = array_search($authId, $newNotify);
+		if($k !== false) {
+			array_splice($newNotify, $k, 1);
+		}
+		if(!empty($newNotify)) {
+			$this->createMailJob($newNotify, "ticketAddNotifyMsg", $params);
+		}
+		$removeNotify = array_diff($prevNotifyUsers, $notifyUsers);
+		$k = array_search($authId, $removeNotify);
+		if($k !== false) {
+			array_splice($removeNotify, $k, 1);
+		}
+		if(!empty($removeNotify)) {
+			$this->createMailJob($removeNotify, "ticketRemoveNotifyMsg", $params);
+		}
+
 		// notify other changes to already assigned users
-		$changeNotifyUsers = array_intersect($assignedUsers, $prevUsers);
+		$assignedUsersToNotifyChanges = array_intersect($assignedUsers, $prevAssignedUsers);
+		$notifyUsersToNotifyChanges = array_intersect($notifyUsers, $prevNotifyUsers);
+		$changeNotifyUsers = array_unique(array_merge($assignedUsersToNotifyChanges, $notifyUsersToNotifyChanges));
 		$k = array_search($authId, $changeNotifyUsers);
 		if($k !== false) {
 			array_splice($changeNotifyUsers, $k, 1);
@@ -202,7 +237,7 @@ class TicketsController extends ModulesController {
 				}
 			}
 		}
-		
+
 	}
 
 	protected function createMailJob(array &$users, $msgType, array &$params) {
@@ -213,22 +248,22 @@ class TicketsController extends ModulesController {
 
 		$conf = Configure::getInstance();
 		foreach ($users as $usrId) {
-			
+
 			$u = $this->User->findById($usrId);
 			$data["recipient"] = $u['User']['email'];
 			$params["user"] = $u['User']['userid'];
-			
+
 			$subject = $this->getNotifyText($msgType, "subject", $params);
-			$data["mail_params"] = serialize(array("reply_to" => $conf->mailOptions["reply_to"], 
-						"sender" => $conf->mailOptions["sender"], 
+			$data["mail_params"] = serialize(array("reply_to" => $conf->mailOptions["reply_to"],
+						"sender" => $conf->mailOptions["sender"],
 						"subject" => $subject,
 						"signature" => $conf->mailOptions["signature"]
 			));
-			
-			$data["mail_body"] = $this->getNotifyText($msgType, "mail_body", $params);			
+			$data["mail_body"] = $this->getNotifyText($msgType, "mail_body", $params);
+
 			// skip creation if a duplicate mail is already present
 			$res = $jobModel->find("all", array(
-				"conditions" => array("recipient" => $data["recipient"], "status" => $data["status"], 
+				"conditions" => array("recipient" => $data["recipient"], "status" => $data["status"],
 				"mail_body" => $data["mail_body"])));
 			if(!empty($res)) {
 				$this->log("duplicate job for " . $data["recipient"], LOG_DEBUG);
@@ -239,13 +274,19 @@ class TicketsController extends ModulesController {
 				}
 			}
 		}
-		
+
 	}
-	
+
 	protected function getNotifyText($msgType, $field, array &$params) {
 		$t = Configure::read($msgType);
 		if(!empty($t) && !empty($t[$field])) {
 			$text = $t[$field];
+			if ($field == "subject") {
+				$projectName = Configure::read('projectName');
+				if (!empty($projectName)) {
+					$text = str_replace("[BEdita]", "[$projectName]", $text);
+				}
+			}
 			$replaceFields = array("user", "id", "author", "title", "text", "url", "beditaUrl", "changedFields");
 			foreach ($replaceFields as $f) {
 				if(!empty($params[$f])) {
@@ -253,19 +294,20 @@ class TicketsController extends ModulesController {
 					$text = str_replace($plHolder , $params[$f], $text);
 				}
 			}
+
 		}
-		return $text;		
+		return $text;
 	}
-	
-	
-	
+
+
+
 	public function categories() {
 		$this->showCategories($this->Ticket);
 	}
-	
+
 	public function saveCategories() {
 		$this->checkWriteModulePermission();
-		if(empty($this->data["label"])) 
+		if(empty($this->data["label"]))
 			throw new BeditaException( __("No data", true));
 		$this->Transaction->begin() ;
 		if(!ClassRegistry::init("Category")->save($this->data)) {
@@ -291,37 +333,35 @@ class TicketsController extends ModulesController {
 				)
 			);
 
-		$assigned = array();	
-		if(!empty($id)) {
+		$usersList = array();
+		$switch = (!empty($this->params["named"]["relation"]))? $this->params["named"]["relation"] : "assigned";
+		if (!empty($id)) {
 			$objectUserModel = ClassRegistry::init("ObjectUser");
-			$result = $objectUserModel->find("all", array(
-						"conditions" => array("object_id" => $id, "switch" => "assigned"),
-						"fields" => "user_id",
+			$usersList = $objectUserModel->find("list", array(
+						"conditions" => array("object_id" => $id, "switch" => $switch),
+						"fields" => array("ObjectUser.user_id"),
 					)
 			);
-			foreach ($result as $r) {
-				$assigned[] = $r["ObjectUser"]["user_id"];
-			}
-			
 		}
-			
-		foreach($users as $k=>$u) {
-			if(empty($u["Group"])) {
+
+		foreach ($users as $k => $u) {
+			if (empty($u["Group"])) {
 				unset($users[$k]);
 			} else {
-				if(in_array($u["User"]["id"], $assigned)) {
-					$users[$k]["User"]["assigned"] = true;
+				if (in_array($u["User"]["id"], $usersList)) {
+					$users[$k]["User"]["related"] = true;
 				}
 			}
 		}
 
 		$this->set('users', $users);
+		$this->set('relation', $switch);
 		$this->layout = null;
 	}
 
 	public function deleteCategories() {
 		$this->checkWriteModulePermission();
-		if(empty($this->data["id"])) 
+		if(empty($this->data["id"]))
 			throw new BeditaException( __("No data", true));
 		$this->Transaction->begin() ;
 		if(!ClassRegistry::init("Category")->del($this->data["id"])) {
@@ -331,14 +371,14 @@ class TicketsController extends ModulesController {
 		$this->userInfoMessage(__("Category deleted", true) . " -  " . $this->data["label"]);
 		$this->eventInfo("Category " . $this->data["id"] . "-" . $this->data["label"] . " deleted");
 	}
-	
+
 	/**
 	 * load all users with at least one ticket assigned and
-	 * load users assigned foreach ticket 
+	 * load users assigned foreach ticket
 	 */
 	protected function loadAssignedUsers() {
 		$objectUser = ClassRegistry::init("ObjectUser");
-		
+
 		// load all users with a ticket assigned
 		$all_users_id = $objectUser->find("list", array(
 			"fields" => "user_id",
@@ -352,7 +392,7 @@ class TicketsController extends ModulesController {
 			));
 		}
 		$this->set("assignedUsers", $all_users);
-		
+
 		// load specific tickets assignment
 		if (!empty($this->viewVars["objects"])) {
 			foreach ($this->viewVars["objects"] as &$object) {
@@ -363,7 +403,7 @@ class TicketsController extends ModulesController {
 						"object_id" => $object["id"]
 					)
 				));
-				
+
 				$users = array();
 				if(!empty($users_id)) {
 					$users = ClassRegistry::init("User")->find("all", array(
@@ -371,7 +411,7 @@ class TicketsController extends ModulesController {
 						"recursive" => -1
 					));
 				}
-				
+
 				$object["UsersAssigned"] = Set::classicExtract($users, '{n}.User');
 			}
 		}
@@ -386,7 +426,7 @@ class TicketsController extends ModulesController {
 			'conditions' => array("object_type_id" => Configure::read('objectTypes.ticket.id'))
 		));
 		$users_id = array_unique($users_id);
-		$reporters = array();			
+		$reporters = array();
 		if(!empty($users_id)) {
 			$reporters = ClassRegistry::init("User")->find("all", array(
 				"conditions" => array('id' => $users_id),
@@ -400,11 +440,11 @@ class TicketsController extends ModulesController {
 		$REDIRECT = array(
 			"cloneObject"	=> 	array(
 							"OK"	=> "/tickets/view/".@$this->Ticket->id,
-							"ERROR"	=> "/tickets/view/".@$this->Ticket->id 
+							"ERROR"	=> "/tickets/view/".@$this->Ticket->id
 							),
 			"view"	=> 	array(
-							"ERROR"	=> "/tickets" 
-							), 
+							"ERROR"	=> "/tickets"
+							),
 			"save"	=> 	array(
 							"OK"	=> "/tickets/view/".@$this->Ticket->id,
 							"ERROR"	=> $this->referer()
@@ -423,20 +463,20 @@ class TicketsController extends ModulesController {
 							),
 			"deleteSelected" =>	array(
 							"OK"	=> $this->referer(),
-							"ERROR"	=> $this->referer() 
+							"ERROR"	=> $this->referer()
 							),
 			"addItemsToAreaSection"	=> 	array(
 							"OK"	=> $this->referer(),
-							"ERROR"	=> $this->referer() 
+							"ERROR"	=> $this->referer()
 							),
 			"changeStatusObjects"	=> 	array(
 							"OK"	=> $this->referer(),
-							"ERROR"	=> $this->referer() 
+							"ERROR"	=> $this->referer()
 							)
 		);
 		if(isset($REDIRECT[$action][$esito])) return $REDIRECT[$action][$esito] ;
 		return false ;
 	}
-	
+
 }
 ?>
