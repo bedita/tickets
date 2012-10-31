@@ -26,3 +26,9 @@
 .resolved {color:#339900 !important;}
 .unresolvable {}
 .obsolete {}
+
+ul.users-relations li{
+	display:inline;
+	padding:4px 5px 4px 5px;
+	width:auto;
+}

@@ -24,7 +24,7 @@ $config["ticketAssignGroups"] = array (
 );
 
 // NOTIFICATION MESSAGES
-// ticketNewAssignementMsg - ticketUnassignementMsg - ticketModifiedMsg
+// ticketNewAssignementMsg - ticketUnassignementMsg - ticketAddNotifyMsg - ticketRemoveNotifyMsg - ticketModifiedMsg
 
 $config["ticketNewAssignementMsg"] = array(
 	"subject" => "[BEdita] #[\$id]: ticket assignement",
@@ -39,6 +39,23 @@ $config["ticketUnassignementMsg"] = array(
 	"subject" => "[BEdita] #[\$id]: ticket unassignement",
 	"mail_body" => "Hi [\$user], " .
 					"\n\n[\$author] has removed you from ticket #[\$id] " .
+					"\n\nview ticket here: [\$url]" .
+					"\n'[\$title]'",
+);
+
+$config["ticketAddNotifyMsg"] = array(
+	"subject" => "[BEdita] #[\$id]: ticket notification",
+	"mail_body" => "Hi [\$user]," .
+					"\n\n[\$author] has added you to the notification list for ticket #[\$id] " .
+					"\n\nview ticket here: [\$url]" .
+					"\n\n'[\$title]'" .
+					"\n\n<<[\$text]>>",
+);
+
+$config["ticketRemoveNotifyMsg"] = array(
+	"subject" => "[BEdita] #[\$id]: ticket notification removed",
+	"mail_body" => "Hi [\$user], " .
+					"\n\n[\$author] has removed you from notification list for ticket #[\$id] " .
 					"\n\nview ticket here: [\$url]" .
 					"\n'[\$title]'",
 );

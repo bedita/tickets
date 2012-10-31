@@ -1,6 +1,6 @@
 <script type="text/javascript">
 <!--
-var formAction = "{$html->url('/tickets/assign')}";
+var userTicketRelation = "{$relation}";
 {literal}
 
 $(document).ready(function() {
@@ -18,7 +18,7 @@ $(document).ready(function() {
 		});
 		$("#modal").hide();
 		$("#modaloverlay").hide();
-		assignTicketToUsers(ids,users);
+		relateTicketToUsers(ids,users,userTicketRelation);
 	});
 
 
@@ -42,7 +42,7 @@ $(document).ready(function() {
 	{foreach from=$users item=u}
 	{if empty($u.Ticket)}
 	<tr>
-		<td style="text-align:right"><input type="checkbox" class="ucheck" value="{$u.User.id}" rel="{$u.User.userid}" name="data[users][{$u.User.id}]" {if !empty($u.User.assigned)}checked="checked"{/if}/></td>
+		<td style="text-align:right"><input type="checkbox" class="ucheck" value="{$u.User.id}" rel="{$u.User.userid}" name="data[users][{$u.User.id}]" {if !empty($u.User.related)}checked="checked"{/if}/></td>
 		<td>{$u.User.userid}</td>
 		<td>{$u.User.realname}</td>
 	</tr>
