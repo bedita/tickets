@@ -34,7 +34,8 @@ class Ticket extends BEAppObjectModel {
 		'CompactResult' 		=> array("ReferenceObject"),
 		'SearchTextSave',
 		'ForeignDependenceSave' => array('BEObject'),
-		'DeleteObject' 			=> 'objects'
+		'DeleteObject' 			=> 'objects',
+		'TicketNotifier'
 	);
 
 	protected $modelBindings = array(

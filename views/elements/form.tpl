@@ -73,7 +73,7 @@ $(document).ready(function(){
 <div class="tab"><h2>{t}Properties{/t}</h2></div>
 
 <fieldset id="properties">			
-				
+
 	<table class="bordered">		
 		<tr>
 			<th>{t}status{/t}</th>
@@ -82,7 +82,7 @@ $(document).ready(function(){
 				{assign var="prevsta" value="draft"}
 				{foreach item=sta key='key' from=$conf->ticketStatus}
 					{if $sta!=$prevsta}<option onclick="this.blur()" disabled="">---- {$sta|replace:"on":"open"|replace:"off":"closed"} states ----</option>{/if}					
-					<option {if $key==$object.ticket_status}selected="selected"{/if} value="{$key}">{$key}</option>		
+					<option {if $key==$object.ticket_status|default:''}selected="selected"{/if} value="{$key}">{$key}</option>		
 				{assign var="prevsta" value=$sta}	
 				{/foreach}
 				</select>
@@ -119,7 +119,7 @@ $(document).ready(function(){
 		<tr>
 			<th>{t}percentage complete{/t}:</th>
 			<td>
-			<input type="range" name="data[percent_completed]" min="0" max="100" step="1" value="{$object.percent_completed}">
+			<input type="range" name="data[percent_completed]" min="0" max="100" step="1" value="{$object.percent_completed|default:0}">
 			</td>
  		</tr>
 		<tr>
@@ -140,7 +140,6 @@ $(document).ready(function(){
 	<table class="bordered">
 		<tr>
 			<td style="width:150px">
-			
 			<input type="button" class="modalbutton" name="edit" 
 			{if !empty($object.User.assigned)}
 				value=" {t}assigned to: {/t}  "

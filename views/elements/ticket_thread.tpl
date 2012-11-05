@@ -107,7 +107,7 @@ function refreshNoteList(delButton) {
 		{/if}
 		</div>
 		
-		<form id="saveNote" action="{$html->url('/pages/saveNote')}" method="post">
+		<form id="saveNote" action="{$html->url('/tickets/saveNote')}" method="post">
 		<input type="hidden" name="data[object_id]" value="{$object.id}"/>
 
 		<table class="editorheader ultracondensed" style="margin:-10px 0px 0px 10px">

@@ -1,0 +1,82 @@
+<?php
+/**
+ * Override default NOTIFICATION MESSAGES
+ *
+ * ticketNewAssignementMsg - ticketUnassignementMsg - ticketAddNotifyMsg - ticketRemoveNotifyMsg - ticketModifiedMsg
+ */
+
+$notify["ticketNewAssignementMsg"]["eng"] = array(
+	"subject" => "[BEdita] #[\$id]: ticket assignement",
+	"mail_body" => "Hi [\$user]," .
+					"\n\n[\$author] has assigned to you the ticket #[\$id] " .
+					"\n\nview ticket here: [\$url]" .
+					"\n\n'[\$title]'" .
+					"\n\n<<[\$text]>>",
+);
+
+$notify["ticketUnassignementMsg"]["eng"] = array(
+	"subject" => "[BEdita] #[\$id]: ticket unassignement",
+	"mail_body" => "Hi [\$user], " .
+					"\n\n[\$author] has removed you from ticket #[\$id] " .
+					"\n\nview ticket here: [\$url]" .
+					"\n'[\$title]'",
+);
+
+$notify["ticketAddNotifyMsg"]["eng"] = array(
+	"subject" => "[BEdita] #[\$id]: ticket notification",
+	"mail_body" => "Hi [\$user]," .
+					"\n\n[\$author] has added you to the notification list for ticket #[\$id] " .
+					"\n\nview ticket here: [\$url]" .
+					"\n\n'[\$title]'" .
+					"\n\n<<[\$text]>>",
+);
+
+$notify["ticketRemoveNotifyMsg"]["eng"] = array(
+	"subject" => "[BEdita] #[\$id]: ticket notification removed",
+	"mail_body" => "Hi [\$user], " .
+					"\n\n[\$author] has removed you from notification list for ticket #[\$id] " .
+					"\n\nview ticket here: [\$url]" .
+					"\n'[\$title]'",
+);
+
+$notify["ticketModifiedMsg"]["eng"] = array(
+	"subject" => "[BEdita] #[\$id]: ticket changed",
+	"mail_body" => "Hi [\$user], " .
+					"\n\n[\$author] changed ticket #[\$id] : [\$url] - '[\$title]'" .
+					"\n\n[\$changedFields]" .
+					"\n\nview ticket here: [\$url]",
+
+);
+
+/**
+ * You can also override default editor_note message that are yhose used for comments on ticket
+ * The default msg are located in bedita/bedita-app/config/notify/default.msg.php
+ */
+// Message for new note
+$notify["editor_note"]["eng"] = array(
+	"subject" => "[BEdita] new note on '[\$title]'",
+
+	"mail_body" => "Hi [\$user], " .
+	"\nthis is an automatic notification email from BEdita at " .
+	"\n [\$beditaUrl]" .
+	"\nA new note has been added by [\$author] on '[\$title]' "	.
+	"\n\n ------------" .
+	"\n[\$text]" .
+	"\n ------------" .
+	"\n Look at [\$url]"
+);
+
+$notify["editor_note"]["ita"] = array(
+	"subject" => "[BEdita] nuova nota su '[\$title]'",
+
+	"mail_body" => "Ciao [\$user], " .
+	"\nquesto e' un messaggio automatico di notifica da BEdita." .
+	"\nE' stata aggiunta una nuova nota dall'utente [\$author] sul contenuto '[\$title]' "	.
+	"\n\n ------------" .
+	"\n[\$text]" .
+	"\n ------------" .
+	"\n\n Vedi: [\$url]"
+);
+
+
+?>

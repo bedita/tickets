@@ -50,7 +50,7 @@ $(document).ready(function() {
 	{/foreach}
 </table>
 
-<input id="usersToTickets" style="margin:10px 0px 10px 100px" type="button" value=" {t}assign{/t} "/>
+<input id="usersToTickets" style="margin:10px 0px 10px 100px" type="button" value=" {if $relation == "assigned"}{t}assign{/t}{elseif $relation == "notify"}{t}notify{/t}{/if} "/>
 </fieldset>
 
 </form>

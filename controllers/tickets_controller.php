@@ -83,7 +83,9 @@ class TicketsController extends ModulesController {
 
 	public function view($id = null) {
 		$this->viewObject($this->Ticket, $id);
-		$this->viewVars['object']['User'] = Set::combine($this->viewVars['object'], 'User.{n}.id', 'User.{n}', 'User.{n}.ObjectUser.switch');
+		if (!empty($id)) {
+			$this->viewVars['object']['User'] = Set::combine($this->viewVars['object'], 'User.{n}.id', 'User.{n}', 'User.{n}.ObjectUser.switch');
+		}
 		$this->set("objectTypeId", Configure::read("objectTypes.ticket.id"));
 	}
 
@@ -104,202 +106,26 @@ class TicketsController extends ModulesController {
 	public function save() {
 		$this->checkWriteModulePermission();
 		$this->Transaction->begin();
-
-		$numRev = 0;
-		if(!empty($this->data['id'])) {
-			$versionModel = ClassRegistry::init("Version");
-			$numRev = $versionModel->numRevisions($this->data['id']);
-		}
 		$this->saveObject($this->Ticket);
-
-		// remove and create obj/user assignement/notification
-		$objectUserModel = ClassRegistry::init("ObjectUser");
-		$notifyParams = array(
-			"assignedUsers" => array(),
-			"prevAssignedUsers" => array(),
-			"notifyUsers" => array(),
-			"prevNotifyUsers" => array(),
-			"prevNumRev" => $numRev
-		);
-		foreach ($this->data["users"] as $switch => $usersList) {
-			$notifyParams["prev" . ucfirst($switch) . "Users"] = $objectUserModel->find('list', array(
-				"conditions" => array(
-					"object_id" => $this->Ticket->id,
-					"switch" => $switch
-				),
-				"fields" => "user_id"
-			));
-			$objectUserModel->deleteAll(array(
-				"object_id" => $this->Ticket->id,
-				"switch" => $switch
-			));
-			if(!empty($usersList)) {
-				$notifyParams[$switch . "Users"] = explode(",", $usersList);
-				foreach($notifyParams[$switch . "Users"] as $user_id) {
-					$objectUserModel->create();
-					$objectUserModel->save(array(
-						"user_id"=>trim($user_id),
-						"object_id" => $this->Ticket->id,
-						"switch" => $switch
-					));
-				}
-			}
-		}
-		$this->notify($notifyParams);
 	 	$this->Transaction->commit() ;
  		$this->userInfoMessage(__("Ticket saved", true)." - ".$this->data["title"]);
 		$this->eventInfo("ticket [". $this->data["title"]."] saved");
 	}
 
-	protected function notify(array &$notifyParams) {
-		extract($notifyParams);
-		$auth = $this->BeAuth->user["userid"];
-		$authId = $this->BeAuth->user["id"];
-		$ticketId = $this->Ticket->id;
-		$params = array("author" => $auth,
-			"title" => $this->data["title"],
-			"id" => $ticketId,
-			"url" => Configure::read("beditaUrl") . "/view/" . $ticketId,
-			"text" => strip_tags($this->data["description"]),
-			"beditaUrl" => Configure::read("beditaUrl"),
-		);
-		// verify new assignements, and removed assignement
-		$newAssigned = array_diff($assignedUsers, $prevAssignedUsers);
-		$k = array_search($authId, $newAssigned);
-		if($k !== false) {
-			array_splice($newAssigned, $k, 1);
-		}
-		if(!empty($newAssigned)) {
-			$this->createMailJob($newAssigned, "ticketNewAssignementMsg", $params);
-		}
-		$unAssigned = array_diff($prevAssignedUsers, $assignedUsers);
-		$k = array_search($authId, $unAssigned);
-		if($k !== false) {
-			array_splice($unAssigned, $k, 1);
-		}
-		if(!empty($unAssigned)) {
-			$this->createMailJob($unAssigned, "ticketUnassignementMsg", $params);
-		}
-
-		// verify new notify, and removed notify
-		$newNotify = array_diff($notifyUsers, $prevNotifyUsers);
-		$k = array_search($authId, $newNotify);
-		if($k !== false) {
-			array_splice($newNotify, $k, 1);
-		}
-		if(!empty($newNotify)) {
-			$this->createMailJob($newNotify, "ticketAddNotifyMsg", $params);
-		}
-		$removeNotify = array_diff($prevNotifyUsers, $notifyUsers);
-		$k = array_search($authId, $removeNotify);
-		if($k !== false) {
-			array_splice($removeNotify, $k, 1);
-		}
-		if(!empty($removeNotify)) {
-			$this->createMailJob($removeNotify, "ticketRemoveNotifyMsg", $params);
-		}
-
-		// notify other changes to already assigned users
-		$assignedUsersToNotifyChanges = array_intersect($assignedUsers, $prevAssignedUsers);
-		$notifyUsersToNotifyChanges = array_intersect($notifyUsers, $prevNotifyUsers);
-		$changeNotifyUsers = array_unique(array_merge($assignedUsersToNotifyChanges, $notifyUsersToNotifyChanges));
-		$k = array_search($authId, $changeNotifyUsers);
-		if($k !== false) {
-			array_splice($changeNotifyUsers, $k, 1);
-		}
-		// add reporter if missing and not $authId
-		$creatorId = ClassRegistry::init("BEObject")->field("user_created", array("id" => $ticketId));
-		$k = array_search($creatorId, $changeNotifyUsers);
-		if($k === false && $creatorId != $authId) {
-			$changeNotifyUsers[] = $creatorId;
-		}
-		if(!empty($changeNotifyUsers)) {
-			$versionModel = ClassRegistry::init("Version");
-			$numRev = $versionModel->numRevisions($ticketId);
-			if($numRev > $prevNumRev) {
-				$diff = $versionModel->field("diff", array("revision" => $numRev, "object_id" => $ticketId));
-				$diff = unserialize($diff);
-				$msg = "";
-				// see if an interesting field has changed
-				$checkFields = array("description", "ticket_status", "severity");
-				foreach ($checkFields as $chk) {
-					if(!empty($diff[$chk])) {
-						if($chk == "description") {
-							$msg .= "'description' changed \n";
-						} else {
-							$msg .= "'$chk' changed to '" . $this->data[$chk] . "' \n";
-						}
-					}
-				}
-				if(!empty($msg)) {
-					$params["changedFields"] = $msg;
-					$this->createMailJob($changeNotifyUsers, "ticketModifiedMsg", $params);
-				}
-			}
-		}
-
+	/**
+	 * save editor note
+	 * if it fails throw BeditaAjaxException managed like json object
+	 */
+	public function saveNote() {
+		$EditorNote = ClassRegistry::init("EditorNote");
+		$EditorNote->Behaviors->detach("Notify");
+		$EditorNote->Behaviors->attach("TicketNotifier");
+		$this->requestAction(array(
+			"controller" => "pages",
+			"action" => "saveNote",
+			"data" => $this->data
+		));
 	}
-
-	protected function createMailJob(array &$users, $msgType, array &$params) {
-		$jobModel = ClassRegistry::init("MailJob");
-		$jobModel->containLevel("default");
-		$data = array();
-		$data["status"] = "unsent";
-
-		$conf = Configure::getInstance();
-		foreach ($users as $usrId) {
-
-			$u = $this->User->findById($usrId);
-			$data["recipient"] = $u['User']['email'];
-			$params["user"] = $u['User']['userid'];
-
-			$subject = $this->getNotifyText($msgType, "subject", $params);
-			$data["mail_params"] = serialize(array("reply_to" => $conf->mailOptions["reply_to"],
-						"sender" => $conf->mailOptions["sender"],
-						"subject" => $subject,
-						"signature" => $conf->mailOptions["signature"]
-			));
-			$data["mail_body"] = $this->getNotifyText($msgType, "mail_body", $params);
-
-			// skip creation if a duplicate mail is already present
-			$res = $jobModel->find("all", array(
-				"conditions" => array("recipient" => $data["recipient"], "status" => $data["status"],
-				"mail_body" => $data["mail_body"])));
-			if(!empty($res)) {
-				$this->log("duplicate job for " . $data["recipient"], LOG_DEBUG);
-			} else {
-				$jobModel->create();
-				if (!$jobModel->save($data)) {
-					throw new BeditaException(__("Error creating mail jobs"),true);
-				}
-			}
-		}
-
-	}
-
-	protected function getNotifyText($msgType, $field, array &$params) {
-		$t = Configure::read($msgType);
-		if(!empty($t) && !empty($t[$field])) {
-			$text = $t[$field];
-			if ($field == "subject") {
-				$projectName = Configure::read('projectName');
-				if (!empty($projectName)) {
-					$text = str_replace("[BEdita]", "[$projectName]", $text);
-				}
-			}
-			$replaceFields = array("user", "id", "author", "title", "text", "url", "beditaUrl", "changedFields");
-			foreach ($replaceFields as $f) {
-				if(!empty($params[$f])) {
-					$plHolder = "[\$" . $f . "]";
-					$text = str_replace($plHolder , $params[$f], $text);
-				}
-			}
-
-		}
-		return $text;
-	}
-
-
 
 	public function categories() {
 		$this->showCategories($this->Ticket);
