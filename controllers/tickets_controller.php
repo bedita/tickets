@@ -121,10 +121,10 @@ class TicketsController extends ModulesController {
 		$EditorNote->Behaviors->detach("Notify");
 		$EditorNote->Behaviors->attach("TicketNotifier");
 		$this->requestAction(array(
-			"controller" => "pages",
-			"action" => "saveNote",
-			"data" => $this->data
-		));
+				"controller" => "pages",
+				"action" => "saveNote"
+			), array("data" => $this->data)
+		);
 	}
 
 	public function categories() {
