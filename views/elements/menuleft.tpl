@@ -8,7 +8,9 @@ Menu a SX valido per tutte le pagine del controller.
 
 	<div class="modules"><label class="bedita" rel="{$html->url('/')}">{$conf->projectName|default:$conf->userVersion}</label></div>
 
-	{$view->element("messages")}
+	{if strcmp($conf->majorVersion, "3.2") < 0}
+		{$view->element("messages")}
+	{/if}
 	
 		<ul class="menuleft insidecol">
 		<li {if $method eq 'index'}class="on"{/if}>{$tr->link('Tickets', '/tickets')}</li>
