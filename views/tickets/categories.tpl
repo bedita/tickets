@@ -12,7 +12,6 @@
 
 </div>
 
-{assign_associative var="params" method="index"}
 {$view->element("menucommands", $params)}
 
 <div class="main">
