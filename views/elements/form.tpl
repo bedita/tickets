@@ -29,42 +29,7 @@ $(document).ready(function(){
 
 <input type="hidden" name="data[id]" value="{$object.id|default:''}"/>
 
-{if ($conf->mce|default:true)}
-	
-	{$javascript->link("tiny_mce/tiny_mce", false)}
-	{$javascript->link("tiny_mce/tiny_mce_default_init", false)}
-
-{elseif ($conf->wymeditor|default:true)}
-
-	{$javascript->link("wymeditor/jquery.wymeditor.pack", false)}
-	{$javascript->link("wymeditor/wymeditor_default_init", false)}
-
-{elseif ($conf->ckeditor|default:false)}
-
-	{$javascript->link("ckeditor/ckeditor", false)}
-	{$javascript->link("ckeditor/adapters/jquery", false)}
-	{$javascript->link("ckeditor/ckeditor_default_init", false)}
-
-{/if}
-
-
-{* title and description *}
-
-{assign var="newtitle" value=$html->params.named.title|default:''}
-
-<div class="tab"><h2>{t}Title{/t}</h2></div>
-
-<fieldset id="title">
-
-	<label>{t}title{/t}:</label>
-	<br />
-	<input type="text" name="data[title]" style="width:100%" value="{$object.title|escape:'html'|escape:'quotes'|default:$newtitle}" id="titleBEObject" />
-	<br />
-	<label>{t}description{/t}:</label>
-	<br />
-	<textarea id="subtitle" class="mce" style="height:280px" name="data[description]">{$object.description|default:''|escape:'html'}</textarea>
-
-</fieldset>
+{$view->element("form_title_subtitle")}
 
 {$view->element("form_categories")}
 
