@@ -34,11 +34,6 @@ $config["objRelationType"] = array(
 		"hidden" => false,
 		"left" 	 => array("ticket"),
 		"right"  => array("ticket")
-	),
-    "relazionePericolosa" => array(
-		"hidden" => false,
-		"left" 	 => array("ticket"),
-		"right"  => array("ticket")
 	)
 );
 
