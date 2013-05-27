@@ -3,7 +3,7 @@
 {* title and description *}
 
 {assign var="newtitle" value=$html->params.named.title|default:''}
-<div class="tab"><h2>{t}Title{/t}</h2></div>
+<div class="tab"><h2>{t}Title and description{/t}</h2></div>
 
 <fieldset id="title">
 
