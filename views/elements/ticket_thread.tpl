@@ -17,19 +17,32 @@ $(document).ready( function (){
 			alert(comunicationErrorMsg);
 			$("#noteloader").hide();
 		}
-	}; 
+	};
+
+	var overrideOptions = {
+		success: function(data, textStatus, jqXHR) {
+			showNoteResponse(data, textStatus, jqXHR, true);
+		}
+	};
+	var optionsNoteCloseForm = $.extend({}, optionsNoteForm, overrideOptions);
+
 	$("#saveNote").ajaxForm(optionsNoteForm);
 	
+	$("#saveNoteAndClose").click(function() {
+		$("#saveNote").ajaxSubmit(optionsNoteCloseForm);
+	});
+
 	$("#listNote").find("input[name=deletenote]").click(function() {
 		refreshNoteList($(this));
 	});
 });	
 
-function showNoteResponse(data) {
+function showNoteResponse(data, textStatus, jqXHR, closeTicket) {
 	if (data.errorMsg) {
 		alert(data.errorMsg);
 		$("#noteloader").hide();
 	} else {
+		var closeTicket = closeTicket || false;
 		var emptyDiv = "<div><\/div>";
 		$(emptyDiv).load(urlLoadNote, data, function() {
 			$("#listNote").append(this);
@@ -37,6 +50,10 @@ function showNoteResponse(data) {
 			$(this).find("input[name=deletenote]").click(function() {
 				refreshNoteList($(this));
 			});
+
+			if (closeTicket) {
+				$("#closeDialogButton").click();
+			}
 		});
 	}
 }
@@ -119,6 +136,7 @@ function refreshNoteList(delButton) {
 		<textarea id="notetext" name="data[description]" 
 		style="margin-left:10px; height:110px; width:628px"></textarea>
 		<input type="submit" style="margin:10px" value="{t}send{/t}" />
+		<input type="button" id="saveNoteAndClose" value="{t}send & close{/t}"{if $conf->ticketStatus[$object.ticket_status] == "off"}disabled{/if} />
 		</form>
 		
 		<br style="clear:both" />
