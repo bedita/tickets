@@ -198,6 +198,18 @@ class TicketsController extends ModulesController {
 		$this->eventInfo("Category " . $this->data["id"] . "-" . $this->data["label"] . " deleted");
 	}
 
+	public function closeAs() {
+		$this->layout = 'ajax';
+		$status = Configure::read('ticketStatus');
+		$closeStatus = array();
+		foreach ($status as $label => $statusValue) {
+			if ($statusValue == "off") {
+				$closeStatus[] = $label;
+			}
+		}
+		$this->set('closeStatus', $closeStatus);
+	}
+
 	/**
 	 * load all users with at least one ticket assigned and
 	 * load users assigned foreach ticket

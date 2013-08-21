@@ -34,7 +34,7 @@
 
 {assign var=objIndex value=0}
 
-{assign_associative var="params" method="view" fixed = true}
+{assign_associative var="params" method="view" fixed=true object=$object|default:''}
 {$view->element("menucommands", $params)}
 
 <div class="main">	
