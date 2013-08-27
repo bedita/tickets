@@ -127,6 +127,18 @@ class TicketsController extends ModulesController {
 		);
 	}
 
+	/**
+	 * load an editor note
+	 */
+	public function loadNote() {
+		$this->layout = "ajax";
+		$editorNoteModel = ClassRegistry::init("EditorNote");
+		$this->set("note", $editorNoteModel->find("first", array(
+			"conditions" => array("EditorNote.id" => $this->params["form"]["id"]))
+		));
+		$this->render('/elements/single_note');
+	}
+
 	public function categories() {
 		$this->showCategories($this->Ticket);
 	}

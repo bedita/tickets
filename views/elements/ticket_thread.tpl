@@ -1,5 +1,5 @@
 <script type="text/javascript">
-var urlLoadNote = "{$html->url('/pages/loadNote')}";
+var urlLoadNote = "{$html->url('/tickets/loadNote')}";
 var urlDelNote = "{$html->url('/pages/deleteNote')}";
 var comunicationErrorMsg = "{t}Communication error{/t}";
 var confirmDelNoteMsg = "{t}Are you sure that you want to delete the note?{/t}";
@@ -32,7 +32,7 @@ $(document).ready( function (){
 		$("#saveNote").ajaxSubmit(optionsNoteCloseForm);
 	});
 
-	$("#listNote").find("input[name=deletenote]").click(function() {
+	$("#listNote").find("input[name=deletenote]").live('click', function() {
 		refreshNoteList($(this));
 	});
 });	
@@ -43,16 +43,20 @@ function showNoteResponse(data, textStatus, jqXHR, closeTicket) {
 		$("#noteloader").hide();
 	} else {
 		var closeTicket = closeTicket || false;
-		var emptyDiv = "<div><\/div>";
-		$(emptyDiv).load(urlLoadNote, data, function() {
-			$("#listNote").append(this);
-			$("#noteloader").hide();
-			$(this).find("input[name=deletenote]").click(function() {
-				refreshNoteList($(this));
-			});
-
-			if (closeTicket) {
-				$("#closeDialogButton").click();
+		$.ajax({
+			url: urlLoadNote,
+			type:"post",
+			dataType: "html",
+			data: data,
+			success: function(response, status, xhr) {
+				$("#listNote").append(response);
+				$("#noteloader").hide();
+				if ($("#listNote div.js-single-note").length > 0) {
+					$("#delBEObject").remove();
+				}
+				if (closeTicket) {
+					$("#closeDialogButton").click();
+				}
 			}
 		});
 	}
