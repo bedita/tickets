@@ -16,5 +16,12 @@ $(document).ready(function(){
 		}
 	});
 	
+	// close ticket through out close button in modal dialog
+	$("#closeTicket", "div#closeDialogContainer").live('click', function() {
+		var status = $("input[name=closeAs]:checked", "#closeDialogContainer").val();
+		$("select#ticketStatus option[value='" + status + "']").attr('selected', 'selected');
+		$("#saveBEObject").click();
+		$("#modalmain").empty().css({height: '80px'}).addClass("modaloader");
+	});
 
 });

@@ -127,6 +127,18 @@ class TicketsController extends ModulesController {
 		);
 	}
 
+	/**
+	 * load an editor note
+	 */
+	public function loadNote() {
+		$this->layout = "ajax";
+		$editorNoteModel = ClassRegistry::init("EditorNote");
+		$this->set("note", $editorNoteModel->find("first", array(
+			"conditions" => array("EditorNote.id" => $this->params["form"]["id"]))
+		));
+		$this->render('/elements/single_note');
+	}
+
 	public function categories() {
 		$this->showCategories($this->Ticket);
 	}
@@ -196,6 +208,18 @@ class TicketsController extends ModulesController {
 		$this->Transaction->commit();
 		$this->userInfoMessage(__("Category deleted", true) . " -  " . $this->data["label"]);
 		$this->eventInfo("Category " . $this->data["id"] . "-" . $this->data["label"] . " deleted");
+	}
+
+	public function closeAs() {
+		$this->layout = 'ajax';
+		$status = Configure::read('ticketStatus');
+		$closeStatus = array();
+		foreach ($status as $label => $statusValue) {
+			if ($statusValue == "off") {
+				$closeStatus[] = $label;
+			}
+		}
+		$this->set('closeStatus', $closeStatus);
 	}
 
 	/**

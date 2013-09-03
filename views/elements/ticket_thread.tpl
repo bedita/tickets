@@ -1,5 +1,5 @@
 <script type="text/javascript">
-var urlLoadNote = "{$html->url('/pages/loadNote')}";
+var urlLoadNote = "{$html->url('/tickets/loadNote')}";
 var urlDelNote = "{$html->url('/pages/deleteNote')}";
 var comunicationErrorMsg = "{t}Communication error{/t}";
 var confirmDelNoteMsg = "{t}Are you sure that you want to delete the note?{/t}";
@@ -17,26 +17,47 @@ $(document).ready( function (){
 			alert(comunicationErrorMsg);
 			$("#noteloader").hide();
 		}
-	}; 
+	};
+
+	var overrideOptions = {
+		success: function(data, textStatus, jqXHR) {
+			showNoteResponse(data, textStatus, jqXHR, true);
+		}
+	};
+	var optionsNoteCloseForm = $.extend({}, optionsNoteForm, overrideOptions);
+
 	$("#saveNote").ajaxForm(optionsNoteForm);
 	
-	$("#listNote").find("input[name=deletenote]").click(function() {
+	$("#saveNoteAndClose").click(function() {
+		$("#saveNote").ajaxSubmit(optionsNoteCloseForm);
+	});
+
+	$("#listNote").find("input[name=deletenote]").live('click', function() {
 		refreshNoteList($(this));
 	});
 });	
 
-function showNoteResponse(data) {
+function showNoteResponse(data, textStatus, jqXHR, closeTicket) {
 	if (data.errorMsg) {
 		alert(data.errorMsg);
 		$("#noteloader").hide();
 	} else {
-		var emptyDiv = "<div><\/div>";
-		$(emptyDiv).load(urlLoadNote, data, function() {
-			$("#listNote").append(this);
-			$("#noteloader").hide();
-			$(this).find("input[name=deletenote]").click(function() {
-				refreshNoteList($(this));
-			});
+		var closeTicket = closeTicket || false;
+		$.ajax({
+			url: urlLoadNote,
+			type:"post",
+			dataType: "html",
+			data: data,
+			success: function(response, status, xhr) {
+				$("#listNote").append(response);
+				$("#noteloader").hide();
+				if ($("#listNote div.js-single-note").length > 0) {
+					$("#delBEObject").remove();
+				}
+				if (closeTicket) {
+					$("#closeDialogButton").click();
+				}
+			}
 		});
 	}
 }
@@ -119,6 +140,7 @@ function refreshNoteList(delButton) {
 		<textarea id="notetext" name="data[description]" 
 		style="margin-left:10px; height:110px; width:628px"></textarea>
 		<input type="submit" style="margin:10px" value="{t}send{/t}" />
+		<input type="button" id="saveNoteAndClose" value="{t}send & close{/t}"{if $conf->ticketStatus[$object.ticket_status] == "off"}disabled{/if} />
 		</form>
 		
 		<br style="clear:both" />
