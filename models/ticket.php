@@ -100,16 +100,19 @@ class Ticket extends BEAppObjectModel {
         $userModel = ClassRegistry::init("User");
         $editorNoteModel = ClassRegistry::init("EditorNote");
         
+        $this->log("Commit data: " . $ciData, LOG_DEBUG);
         $items = explode("|", $ciData);
         $user = $items[0];
+        $this->log("Commit user: " . $user, LOG_DEBUG);
         $beditaUser = Configure::read("scmIntegration.users." . $user);
+        $this->log("Commit beditauser: " . $beditaUser, LOG_DEBUG);
         if (!empty($beditaUser)) {
             $userId = $userModel->field("id", array("userid" => $beditaUser));
             $commit = $items[1];
             $commitUrl = Configure::read("scmIntegration.commitBaseUrl") . $commit;
             $msg = $items[2];
             $matches = array();
-            preg_match_all("/\s+\#([0-9]+)/i", $msg, $matches);
+            preg_match_all("/\s*\#([0-9]+)/i", $msg, $matches);
             $ticketIds = $matches[1];
             if (!empty($ticketIds)) {
                 foreach ($ticketIds as $objectId) {
@@ -122,6 +125,7 @@ class Ticket extends BEAppObjectModel {
                             "user_modified" => $userId,
                     );
                     $editorNoteModel->create();
+                    $editorNoteModel->Behaviors->detach("Notify");
                     if (!$editorNoteModel->save($data)) {
                         throw new BeditaException(__("Error saving ticket note", true),
                                 $editorNoteModel->validationErrors);
@@ -130,7 +134,6 @@ class Ticket extends BEAppObjectModel {
                 }
             }
         }
-        $this->log("Commit data: " . $ciData, LOG_DEBUG);
     }
 
 }
