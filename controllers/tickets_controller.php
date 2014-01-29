@@ -87,8 +87,24 @@ class TicketsController extends ModulesController {
 			$this->viewVars['object']['User'] = Set::combine($this->viewVars['object'], 'User.{n}.id', 'User.{n}', 'User.{n}.ObjectUser.switch');
 		}
 		$this->set("objectTypeId", Configure::read("objectTypes.ticket.id"));
+		$this->filterScmNotes();
 	}
 
+	private function filterScmNotes() {
+	    // filter notes on scmIntegration
+	    $scmGroup = Configure::read("scmIntegration.groupVisible");
+	    if (!empty($this->viewVars['object']['EditorNote']) && !empty($scmGroup))  {
+	        foreach ($this->viewVars['object']['EditorNote'] as $i => $note) {
+	            if (!empty($note["author"]) && $note["author"] === "scmIntegration") {
+	                $groups = $this->BeAuth->user["groups"];
+	                if (!in_array($scmGroup, $groups)) {
+	                    unset($this->viewVars['object']['EditorNote'][$i]);
+	                }
+	            }
+	        }
+	    }
+	}
+	
 	public function delete() {
 		$this->checkWriteModulePermission();
 		$objectsListDeleted = $this->deleteObjects("Ticket");
@@ -127,6 +143,37 @@ class TicketsController extends ModulesController {
 		);
 	}
 
+    /**
+     * Add notes via scripts/hooks - e.g. svn/git commits for ticket
+     */
+	public function noteHook() {
+        $res = '{"ok": "true"}';
+	    $this->BeAuth->logout();
+        // do some stuff...
+        if (empty($this->params['form']['commit_data'])) {
+            $res = '{"ok": "false", "errorMessage" : "missing commit_data"}';
+        } else {
+            $commitData = $this->params['form']['commit_data'];
+            $this->Ticket->saveScmData($commitData);
+        }
+        echo $res;
+        exit;
+	}
+
+	protected function beforeCheckLogin() {
+        if ($this->action === "noteHook") {
+            if(!empty($this->params['form']['userid']) && 
+                !empty($this->params['form']['passwd'])) {
+                $userid = $this->params['form']['userid'];
+                $password = $this->params['form']['passwd'];
+                if(!$this->BeAuth->login($userid, $password)) {
+                    $this->eventError("Hook login error");
+                    $this->log("Hook login error: " . $userid . ":" . $password);
+                }
+            }
+        }
+	}
+	
 	/**
 	 * load an editor note
 	 */

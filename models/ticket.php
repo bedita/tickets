@@ -68,6 +68,70 @@ class Ticket extends BEAppObjectModel {
 		}
 		return true ;
 	}
+	
+	/**
+	 * Create a ticket note from SCM integration
+	 * @param unknown $data
+	 */
+	public function saveScmData($data) {
+	    
+	    $sys = Configure::read("scmIntegration.system");
+	    if ($sys === "git") {
+	        $this->saveGitData($data);
+	    } elseif ($sys === "svn") {
+	        $this->saveSvnData($data);
+	    }
+	}
+
+	private function saveSvnData($commitData) {
+	    $this->saveCommitData($commitData);
+	}
+	
+	private function saveGitData($commitData) {
+	    $lines = explode("###", $commitData);
+	    foreach ($lines as $l) {
+	        if (!empty($l)) {
+	            $this->saveCommitData($commitData);
+	        }
+	    }
+	}
+	
+    private function saveCommitData($ciData) {
+        $userModel = ClassRegistry::init("User");
+        $editorNoteModel = ClassRegistry::init("EditorNote");
+        
+        $items = explode("|", $ciData);
+        $user = $items[0];
+        $beditaUser = Configure::read("scmIntegration.users." . $user);
+        if (!empty($beditaUser)) {
+            $userId = $userModel->field("id", array("userid" => $beditaUser));
+            $commit = $items[1];
+            $commitUrl = Configure::read("scmIntegration.commitBaseUrl") . $commit;
+            $msg = $items[2];
+            $matches = array();
+            preg_match_all("/\s+\#([0-9]+)/i", $msg, $matches);
+            $ticketIds = $matches[1];
+            if (!empty($ticketIds)) {
+                foreach ($ticketIds as $objectId) {
+                    $data = array(
+                            "object_id" => $objectId,
+                            "description" => 'Commit: "' . $msg .
+                            '"<br/><a href="' . $commitUrl . '" target="_blank" >' . $commitUrl . "</a>",
+                            "author" => "scmIntegration",
+                            "user_created" => $userId,
+                            "user_modified" => $userId,
+                    );
+                    $editorNoteModel->create();
+                    if (!$editorNoteModel->save($data)) {
+                        throw new BeditaException(__("Error saving ticket note", true),
+                                $editorNoteModel->validationErrors);
+                    }
+                    $this->log("Note saved: " . print_r($data, true), LOG_DEBUG);
+                }
+            }
+        }
+        $this->log("Commit data: " . $ciData, LOG_DEBUG);
+    }
 
 }
 ?>
