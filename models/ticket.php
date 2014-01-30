@@ -69,36 +69,36 @@ class Ticket extends BEAppObjectModel {
 		return true ;
 	}
 	
-	/**
-	 * Create a ticket note from SCM integration
-	 * @param unknown $data
-	 */
-	public function saveScmData($data) {
-	    
-	    $sys = Configure::read("scmIntegration.system");
-	    if ($sys === "git") {
-	        $this->saveGitData($data);
-	    } elseif ($sys === "svn") {
-	        $this->saveSvnData($data);
-	    }
-	}
+    /**
+     * Create a ticket note from SCM integration
+     * @param array $data
+    */
+    public function saveScmData($data) {
+        
+        $sys = Configure::read("scmIntegration.system");
+        if ($sys === "git") {
+            $this->saveGitData($data);
+        } elseif ($sys === "svn") {
+            $this->saveSvnData($data);
+        }
+    }
 
-	private function saveSvnData($commitData) {
-	    $this->saveCommitData($commitData);
-	}
-	
-	private function saveGitData($commitData) {
-	    $lines = explode("###", $commitData);
-	    foreach ($lines as $l) {
-	        if (!empty($l)) {
-	            $this->saveCommitData($commitData);
-	        }
-	    }
-	}
-	
+    private function saveSvnData($commitData) {
+        $this->saveCommitData($commitData);
+    }
+
+    private function saveGitData($commitData) {
+        $lines = explode("###", $commitData);
+        foreach ($lines as $l) {
+            if (!empty($l)) {
+                $this->saveCommitData($commitData);
+            }
+        }
+    }
+
     private function saveCommitData($ciData) {
         $userModel = ClassRegistry::init("User");
-        $editorNoteModel = ClassRegistry::init("EditorNote");
+        $commitNoteModel = ClassRegistry::init("TicketCommitNote");
         
         $this->log("Commit data: " . $ciData, LOG_DEBUG);
         $items = explode("|", $ciData);
@@ -124,11 +124,11 @@ class Ticket extends BEAppObjectModel {
                             "user_created" => $userId,
                             "user_modified" => $userId,
                     );
-                    $editorNoteModel->create();
-                    $editorNoteModel->Behaviors->detach("Notify");
-                    if (!$editorNoteModel->save($data)) {
+                    $commitNoteModel->create();
+                    $commitNoteModel->Behaviors->detach("Notify");
+                    if (!$commitNoteModel->save($data)) {
                         throw new BeditaException(__("Error saving ticket note", true),
-                                $editorNoteModel->validationErrors);
+                                $commitNoteModel->validationErrors);
                     }
                     $this->log("Note saved: " . print_r($data, true), LOG_DEBUG);
                 }

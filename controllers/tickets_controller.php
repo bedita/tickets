@@ -87,22 +87,18 @@ class TicketsController extends ModulesController {
 			$this->viewVars['object']['User'] = Set::combine($this->viewVars['object'], 'User.{n}.id', 'User.{n}', 'User.{n}.ObjectUser.switch');
 		}
 		$this->set("objectTypeId", Configure::read("objectTypes.ticket.id"));
-		$this->filterScmNotes();
+		$this->filterCommits();
 	}
 
-	private function filterScmNotes() {
-	    // filter notes on scmIntegration
+	private function filterCommits() {
+	    // filter commits on scmIntegration
 	    $scmGroup = Configure::read("scmIntegration.groupVisible");
-	    if (!empty($this->viewVars['object']['EditorNote']) && !empty($scmGroup))  {
-	        foreach ($this->viewVars['object']['EditorNote'] as $i => $note) {
-	            if (!empty($note["author"]) && $note["author"] === "scmIntegration") {
-	                $groups = $this->BeAuth->user["groups"];
-	                if (!in_array($scmGroup, $groups)) {
-	                    unset($this->viewVars['object']['EditorNote'][$i]);
-	                }
-	            }
+        if (!empty($scmGroup)) {
+            $groups = $this->BeAuth->user["groups"];
+	        if (!in_array($scmGroup, $groups)) {
+	            $this->set("hideCommits", true);
 	        }
-	    }
+        }
 	}
 	
 	public function delete() {
