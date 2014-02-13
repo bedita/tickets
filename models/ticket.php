@@ -117,8 +117,9 @@ class Ticket extends BEAppObjectModel {
             if (!empty($ticketIds)) {
                 foreach ($ticketIds as $objectId) {
                     $data = array(
+                            "status" => "on",
                             "object_id" => $objectId,
-                            "description" => 'Commit: "' . $msg .
+                            "description" => 'Commit: "' . strip_tags($msg) .
                             '"<br/><a href="' . $commitUrl . '" target="_blank" >' . $commitUrl . "</a>",
                             "author" => "scmIntegration",
                             "user_created" => $userId,
