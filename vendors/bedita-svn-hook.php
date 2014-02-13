@@ -3,12 +3,13 @@
 // actual configuration read from .conf.php file
 $config = array(
     "logFile" => "./bedita-svn-hook.log", 
-    "beUser" => "bedita", 
-    "bePasswd" => "bedita",
-    "hooks" => array(
-        "svn-base-folder" => "bedita-hook-url"
+    "<repo-path>" => array(
+        "beUser" => "bedita", 
+        "bePasswd" => "bedita",
+        "hooks" => array(
+            "svn-base-folder" => "bedita-hook-url"
+        )
     )
-
 );
 
 //
@@ -69,7 +70,7 @@ foreach ($files as $file_info) {
     $pieces = explode('   ', $file_info);
     $filename = $pieces[1];
     fprintf ($h,  $filename . "\n");
-    foreach ($config["hooks"] as $hookPath => $hUrl) {
+    foreach ($config[$repos]["hooks"] as $hookPath => $hUrl) {
         if (strpos($filename, $hookPath) === 0 && ! in_array($hookPath, $hooks)) {
             $hooks[] = $hookPath;
             $hookUrls[] = $hUrl;
@@ -81,12 +82,13 @@ foreach ($files as $file_info) {
 foreach ($hookUrls as $hUrl) {
 
     $commit_data = rawurlencode($username . "|" .  $new_revision . "|" . $commit_msg);
-    $u = $config["beUser"];
-    $p = $config["bePasswd"];
-    $cmd = "curl --request POST --data-urlencode 'userid=$u' --data-urlencode 'passwd=$p' --data 'commit_data=$commit_data' $hUrl";
-    fprintf ($h, "cmd: " . $cmd . "\n");
-    $res = shell_exec($cmd);
-    fprintf ($h, "result: " . $res . "\n");
+    $u = $config[$repos]["beUser"];
+    $p = $config[$repos]["bePasswd"];
+    $cmd = "curl --request POST --data-urlencode \"userid=$u\" --data-urlencode \"passwd=$p\" --data \"commit_data=$commit_data\" $hUrl";
+    echo "$cmd \n";
+    //fprintf ($h, "cmd: " . $cmd . "\n");
+    exec($cmd, $res);
+    fprintf ($h, "result: " . print_r($res, true) . "\n");
 }
 
 fclose($h);
