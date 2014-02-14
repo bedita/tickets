@@ -84,7 +84,7 @@ foreach ($hookUrls as $hUrl) {
     $commit_data = rawurlencode($username . "|" .  $new_revision . "|" . $commit_msg);
     $u = $config[$repos]["beUser"];
     $p = $config[$repos]["bePasswd"];
-    $cmd = "curl --request POST --data-urlencode \"userid=$u\" --data-urlencode \"passwd=$p\" --data \"commit_data=$commit_data\" $hUrl";
+    $cmd = "curl --request POST --data-urlencode \"repo=$repos\" --data-urlencode \"userid=$u\" --data-urlencode \"passwd=$p\" --data \"commit_data=$commit_data\" $hUrl";
     echo "$cmd \n";
     //fprintf ($h, "cmd: " . $cmd . "\n");
     exec($cmd, $res);

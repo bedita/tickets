@@ -150,7 +150,8 @@ class TicketsController extends ModulesController {
             $res = '{"ok": "false", "errorMessage" : "missing commit_data"}';
         } else {
             $commitData = $this->params['form']['commit_data'];
-            $this->Ticket->saveScmData($commitData);
+            $repo = $this->params['form']['repo'];
+            $this->Ticket->saveScmData($commitData, $repo);
         }
         echo $res;
         exit;

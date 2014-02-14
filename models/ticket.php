@@ -73,30 +73,21 @@ class Ticket extends BEAppObjectModel {
      * Create a ticket note from SCM integration
      * @param array $data
     */
-    public function saveScmData($data) {
-        
-        $sys = Configure::read("scmIntegration.system");
-        if ($sys === "git") {
-            $this->saveGitData($data);
-        } elseif ($sys === "svn") {
-            $this->saveSvnData($data);
+    public function saveScmData($commitData, $repoName) {
+        $repoName = trim($repoName, '/');
+        $slashPos = strrpos($repoName, "/");
+        if ($slashPos !== false) {
+            $repoName = substr($repoName, $slashPos+1);
         }
-    }
-
-    private function saveSvnData($commitData) {
-        $this->saveCommitData($commitData);
-    }
-
-    private function saveGitData($commitData) {
         $lines = explode("###", $commitData);
         foreach ($lines as $l) {
             if (!empty($l)) {
-                $this->saveCommitData($commitData);
+                $this->saveCommitData($l, $repoName);
             }
         }
     }
 
-    private function saveCommitData($ciData) {
+    private function saveCommitData($ciData, $repoName) {
         $userModel = ClassRegistry::init("User");
         $commitNoteModel = ClassRegistry::init("TicketCommitNote");
         
@@ -104,12 +95,15 @@ class Ticket extends BEAppObjectModel {
         $items = explode("|", $ciData);
         $user = $items[0];
         $this->log("Commit user: " . $user, LOG_DEBUG);
-        $beditaUser = Configure::read("scmIntegration.users." . $user);
+        $this->log("Repo name: " . $repoName, LOG_DEBUG);
+        $beditaUser = Configure::read("scmIntegration." . $repoName . ".users. " . $user);
         $this->log("Commit beditauser: " . $beditaUser, LOG_DEBUG);
         if (!empty($beditaUser)) {
             $userId = $userModel->field("id", array("userid" => $beditaUser));
             $commit = $items[1];
-            $commitUrl = Configure::read("scmIntegration.commitBaseUrl") . $commit;
+            $commitUrl = Configure::read("scmIntegration.". $repoName . ".commitUrl");
+            $commitUrl = str_replace("#REV", $commit, $commitUrl);
+            $this->log("Commit url: " . $commitUrl, LOG_DEBUG);
             $msg = $items[2];
             $matches = array();
             preg_match_all("/\s*\#([0-9]+)/i", $msg, $matches);
