@@ -166,7 +166,11 @@ $(document).ready(function(){
 			</td>
 			<td class="{$objects[i].severity}">{$objects[i].severity}</td>
 			<td>{if $objects[i].num_of_editor_note|default:''}<img src="{$html->webroot}img/iconNotes.gif" alt="notes" /> {$objects[i].num_of_editor_note|default:0}{/if}</td>
-			<td>{$objects[i].exp_resolution_date|date_format:$conf->datePattern}</td>
+			<td>
+				{if !empty($objects[i].exp_resolution_date)}
+					{$objects[i].exp_resolution_date|date_format:$conf->datePattern}
+				{/if}
+			</td>
 		</tr>
 		
 		{sectionelse}
