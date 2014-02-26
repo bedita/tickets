@@ -1,8 +1,3 @@
-{*
-Template incluso.
-Menu a SX valido per tutte le pagine del controller.
-*}
-
 {$view->set("method", $method)}
 <div class="primacolonna">
 

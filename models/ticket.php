@@ -68,6 +68,68 @@ class Ticket extends BEAppObjectModel {
 		}
 		return true ;
 	}
+	
+    /**
+     * Create a ticket note from SCM integration
+     * @param array $data
+    */
+    public function saveScmData($commitData, $repoName) {
+        $repoName = trim($repoName, '/');
+        $slashPos = strrpos($repoName, "/");
+        if ($slashPos !== false) {
+            $repoName = substr($repoName, $slashPos+1);
+        }
+        $lines = explode("###", $commitData);
+        foreach ($lines as $l) {
+            if (!empty($l)) {
+                $this->saveCommitData($l, $repoName);
+            }
+        }
+    }
+
+    private function saveCommitData($ciData, $repoName) {
+        $userModel = ClassRegistry::init("User");
+        $commitNoteModel = ClassRegistry::init("TicketCommitNote");
+        
+        $this->log("Commit data: " . $ciData, LOG_DEBUG);
+        $items = explode("|", $ciData);
+        $user = $items[0];
+        $this->log("Commit user: " . $user, LOG_DEBUG);
+        $this->log("Repo name: " . $repoName, LOG_DEBUG);
+        $beditaUser = Configure::read("scmIntegration." . $repoName . ".users. " . $user);
+        $this->log("Commit beditauser: " . $beditaUser, LOG_DEBUG);
+        if (!empty($beditaUser)) {
+            $userId = $userModel->field("id", array("userid" => $beditaUser));
+            $commit = $items[1];
+            $commitUrl = Configure::read("scmIntegration.". $repoName . ".commitUrl");
+            $commitUrl = str_replace("#REV", $commit, $commitUrl);
+            $this->log("Commit url: " . $commitUrl, LOG_DEBUG);
+            $msg = $items[2];
+            $matches = array();
+            preg_match_all("/\s*\#([0-9]+)/i", $msg, $matches);
+            $ticketIds = $matches[1];
+            if (!empty($ticketIds)) {
+                foreach ($ticketIds as $objectId) {
+                    $data = array(
+                            "status" => "on",
+                            "object_id" => $objectId,
+                            "description" => 'Commit: "' . strip_tags($msg) .
+                            '"<br/><a href="' . $commitUrl . '" target="_blank" >' . $commitUrl . "</a>",
+                            "author" => "scmIntegration",
+                            "user_created" => $userId,
+                            "user_modified" => $userId,
+                    );
+                    $commitNoteModel->create();
+                    $commitNoteModel->Behaviors->detach("Notify");
+                    if (!$commitNoteModel->save($data)) {
+                        throw new BeditaException(__("Error saving ticket note", true),
+                                $commitNoteModel->validationErrors);
+                    }
+                    $this->log("Note saved: " . print_r($data, true), LOG_DEBUG);
+                }
+            }
+        }
+    }
 
 }
 ?>

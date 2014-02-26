@@ -31,7 +31,7 @@ $moduleSetup = array(
 	"version" => "0.1",
 	"BEditaMinVersion" => "3.1",
 	"description" => "Tickets Module",
-	"BEditaObjects" => array("Ticket"),
+	"BEditaObjects" => array("Ticket", "TicketCommitNote"),
 	"tables" => array("tickets"),
 );
 

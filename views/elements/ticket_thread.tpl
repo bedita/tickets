@@ -121,8 +121,8 @@ function refreshNoteList(delButton) {
 
 		<div id="listNote" style="margin:10px;">
 		{if (!empty($object.EditorNote))}
-			{foreach from=$object.EditorNote item="note"}
-				{assign_associative var="params" note=$note}
+            {foreach from=$object.EditorNote item="note" name=notes}
+                {assign_associative var="params" note=$note count=$smarty.foreach.notes.iteration}
 				{$view->element('single_note', $params)}
 			{/foreach}
 		{/if}

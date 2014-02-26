@@ -1,8 +1,9 @@
-<div class="js-single-note">
+<div id="note-{$note.id}" class="js-single-note">
     <table class="editorheader ultracondensed" style="width:100%">
     <tr>
+        {bedev}<td> {if !empty($count)}{$count}.{/if} </td>{/bedev}
     	<td class="author">{$note.UserCreated.realname|default:$note.UserCreated.userid|default:$note.creator|default:$note.user_created}</td>
-    	<td class="date">{$note.created|date_format:$conf->dateTimePattern}</td>
+    	<td class="date">{$note.created|date_format:$conf->dateTimePattern}  <a href="#note-{$note.id}" >permalink</a></td>
     </tr>
     </table>
     <p class="editornotes">{$note.description|nl2br}</p>
@@ -10,5 +11,5 @@
     	<input type="button" rel="{$note.id}" 
     	style="font-size:9px !important; text-transform:lowercase; margin:0px 0px 0px 120px;" 
     	name="deletenote" value="{t}delete{/t}" />
-{/if}
+	{/if}
 </div>
