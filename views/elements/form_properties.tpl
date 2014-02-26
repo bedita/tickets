@@ -27,6 +27,7 @@
 				</select>
 			</td>
 		</tr>
+		{bedev}
 		<tr>
 			<th>
 				{t}remaining hours to complete{/t}:&nbsp;
@@ -43,6 +44,7 @@
 				">
 			</td>
 		</tr>
+		{/bedev}
 		<tr>
 			<th>
 				{t}expected resolution date{/t}:&nbsp;
