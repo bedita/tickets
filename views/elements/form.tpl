@@ -110,7 +110,7 @@ $(document).ready(function(){
 {assign_associative var="params" containerId='attachContainer' collection="true" relation='attach' title='Attachments'}
 {$view->element("form_file_list", $params)}
 
-{assign_associative var=available_rel 1="seeTicket" 2="ticketRelated"}
+{assign_associative var=available_rel seeTicket="seeTicket" ticketRelated="ticketRelated"}
 {assign_associative var="params" object_type_id=$objectTypeId availabeRelations=$available_rel}
 {$view->element("form_assoc_objects", $params)}
 
