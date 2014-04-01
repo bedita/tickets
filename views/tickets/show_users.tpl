@@ -1,3 +1,7 @@
+{if strnatcmp($conf->majorVersion, '3.3') > 0}
+    {$html->script('libs/jquery/jquery-migrate-1.2.1', false)} {* assure js retrocompatibility *}
+{/if}
+
 <script type="text/javascript">
 <!--
 var userTicketRelation = "{$relation}";
@@ -9,12 +13,12 @@ $(document).ready(function() {
 		var users = "";
 		var ids = "";
 		$(".ucheck:checked").each(function(){
-			if(users!="") {
-				ids+=",";
+			if (users != "") {
+				ids += ",";
 				//users+=",";
 			}
-			ids+=$(this).val();
-			users+="<li>"+$(this).attr('rel')+"</li>";
+			ids += $(this).val();
+			users += "<li>" + $(this).attr('rel') + "</li>";
 		});
 		$("#modal").hide();
 		$("#modaloverlay").hide();

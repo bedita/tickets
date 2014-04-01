@@ -1,4 +1,9 @@
-{$javascript->link("jquery/jquery.changealert", false)}
+{if strnatcmp($conf->majorVersion, '3.3') <= 0}
+    {$javascript->link("jquery/jquery.changealert", false)}
+{else}
+    {$html->script('libs/jquery/jquery-migrate-1.2.1', false)} {* assure js retrocompatibility *}
+    {$html->script('libs/jquery/plugins/jquery.changealert', false)}
+{/if}
 	
 {$view->element("modulesmenu")}
 

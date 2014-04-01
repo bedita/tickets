@@ -107,8 +107,10 @@ $(document).ready(function(){
 
 {$view->element("form_categories")}
 
-{assign_associative var="params" containerId='attachContainer' collection="true" relation='attach' title='Attachments'}
-{$view->element("form_file_list", $params)}
+{if strnatcmp($conf->majorVersion, '3.3') <= 0}
+	{assign_associative var="params" containerId='attachContainer' collection="true" relation='attach' title='Attachments'}
+	{$view->element("form_file_list", $params)}
+{/if}
 
 {assign_associative var=available_rel seeTicket="seeTicket" ticketRelated="ticketRelated"}
 {assign_associative var="params" object_type_id=$objectTypeId availabeRelations=$available_rel}
