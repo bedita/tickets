@@ -79,9 +79,11 @@ $(document).ready(function(){
 					{foreach from=$object.User.notify item='u' name='user'}
 					<li>{$u.userid}</li>
 					{/foreach}
+				{elseif empty($object)}
+					<li>{$BEAuthUser.userid}</li>
 				{/if}
 				</ul>
-				<input type="hidden" id="usersNotify" name="data[users][notify]" value="{if !empty($object.User.notify)}{foreach from=$object.User.notify item='u' name='user'}{$u.id}{if !$smarty.foreach.user.last},{/if}{/foreach}{/if}"/>
+				<input type="hidden" id="usersNotify" name="data[users][notify]" value="{if !empty($object.User.notify)}{foreach from=$object.User.notify item='u' name='user'}{$u.id}{if !$smarty.foreach.user.last},{/if}{/foreach}{elseif empty($object)}{$BEAuthUser.id}{/if}"/>
 			</td>
 
 		</tr>

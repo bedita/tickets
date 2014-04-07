@@ -202,14 +202,6 @@ class TicketNotifierBehavior extends NotifyBehavior {
 		$notifyUsersToNotifyChanges = array_intersect($notifyUsers, $prevNotifyUsers);
 		$changeNotifyUsers = array_unique(array_merge($assignedUsersToNotifyChanges, $notifyUsersToNotifyChanges));
 
-		// add reporter if missing and not $authId
-		$creatorId = ClassRegistry::init("BEObject")->field("user_created", array("id" => $data["id"]));
-		$k = array_search($creatorId, $changeNotifyUsers);
-		$sessionUser = CakeSession::read("BEAuthUser");
-		if($k === false && $creatorId != $sessionUser["id"]) {
-			$changeNotifyUsers[] = $creatorId;
-		}
-
 		if(!empty($changeNotifyUsers)) {
 			$versionModel = ClassRegistry::init("Version");
 			$numRev = $versionModel->numRevisions($data["id"]);

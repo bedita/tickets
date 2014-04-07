@@ -224,6 +224,10 @@ class TicketsController extends ModulesController {
 						"fields" => array("ObjectUser.user_id"),
 					)
 			);
+		// for new object set session user as notified
+		} elseif ($switch == 'notify') {
+			$userSession = $this->BeAuth->getUSerSession();
+			$usersList = array($userSession['id']);
 		}
 
 		foreach ($users as $k => $u) {
