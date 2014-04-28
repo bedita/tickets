@@ -1,4 +1,4 @@
 @CHARSET "UTF-8";
 
-.tickets {background-color:#ffff00 !important; color:#333 !important}
+.ticket , .tickets {background-color:#ffff00 !important; color:#333 !important}
 
