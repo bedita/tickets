@@ -93,27 +93,23 @@ $(document).ready(function(){
 	<input type="hidden" name="data[users]" id="checkedUsers" /> {* utenti selezionati da modale *}
 	<input type="hidden" name="data[tickets]" id="checkedTickets" /> {* ticket selezionati *}
 
-	<table class="indexlist">
-	{capture name="theader"}
+	<table class="indexlist js-header-float">
 		<thead>
-		<tr>
-			<th>{$beToolbar->order('fixed', '&nbsp;')}</th>
-			<th>{$beToolbar->order('title', 'title')}</th>
-			<th style="text-align:center">{$beToolbar->order('id', 'id')}</th>
-			<th style="text-align:center">{$beToolbar->order('ticket_status', 'status')}</th>
-			<!-- <th>{$beToolbar->order('created', 'created')}</th> -->
-			<th>{$beToolbar->order('userid', 'reporter')}</th>
-			<th>{$beToolbar->order('modified', 'last modified')}</th>
-			<th>{t}assigned{/t}</th>
-			<th>{$beToolbar->order('severity','severity')}</th>
-			<th>{$beToolbar->order('num_of_editor_note', 'replies')}</th>
-			<th>{$beToolbar->order('exp_resolution_date', 'expected')}</th>
-		</tr>
+			<tr>
+				<th>{$beToolbar->order('fixed', '&nbsp;')}</th>
+				<th>{$beToolbar->order('title', 'title')}</th>
+				<th style="text-align:center">{$beToolbar->order('id', 'id')}</th>
+				<th style="text-align:center">{$beToolbar->order('ticket_status', 'status')}</th>
+				<!-- <th>{$beToolbar->order('created', 'created')}</th> -->
+				<th>{$beToolbar->order('userid', 'reporter')}</th>
+				<th>{$beToolbar->order('modified', 'last modified')}</th>
+				<th>{t}assigned{/t}</th>
+				<th>{$beToolbar->order('severity','severity')}</th>
+				<th>{$beToolbar->order('num_of_editor_note', 'replies')}</th>
+				<th>{$beToolbar->order('exp_resolution_date', 'expected')}</th>
+			</tr>
 		</thead>
-	{/capture}
-		
-		{$smarty.capture.theader}
-	
+		<tbody>
 		{section name="i" loop=$objects}
 		
 		<tr class="obj {$objects[i].status}">
@@ -175,47 +171,16 @@ $(document).ready(function(){
 		
 		{sectionelse}
 		
-			<tr><td colspan="100" style="padding:30px">{t}No items found{/t}</td></tr>
+			<tr><td colspan="100">{t}No items found{/t}</td></tr>
 		
 		{/section}
-		
-{if ($smarty.section.i.total) >= 10}
-		
-			{$smarty.capture.theader}
-			
-{/if}
-
+	</tbody>
 
 </table>
 
 <br />
 	
-{if !empty($objects)}
-
-<div style="white-space:nowrap">
-	
-	<label for="selectAll"><input type="checkbox" class="selectAll" id="selectAll"/> {t}(un)select all{/t}</label>
-	&nbsp;&nbsp;&nbsp
-	{t}Go to page{/t}: {$beToolbar->changePageSelect('pagSelectBottom')} 
-	&nbsp;
-	{t}of{/t}&nbsp;
-	{if ($beToolbar->pages()) > 0}
-	{$beToolbar->last($beToolbar->pages(),'',$beToolbar->pages())}
-	{else}1{/if}
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	{t}Dimensions{/t}: {$beToolbar->changeDimSelect('selectTop')} &nbsp;
-	
-	&nbsp;&nbsp;&nbsp;
-	&nbsp;&nbsp;
-	{$beToolbar->next('next','','next')}  <span class="evidence"> &nbsp;</span>	
-	| &nbsp;&nbsp;
-	{$beToolbar->prev('prev','','prev')}  <span class="evidence"> &nbsp;</span>
-</div>
-
-<br />
-
-<div class="tab"><h2>{t}Bulk actions on{/t}&nbsp;<span class="selecteditems evidence"></span> {t}selected records{/t}</h2></div>
-<div>
+{$view->element('list_objects_bulk')}
 
 {*
 
@@ -274,12 +239,3 @@ $(document).ready(function(){
 	
 
 *}
-	<input id="deleteSelected" type="button" value="X {t}Delete selected items{/t}"/>
-</div>
-
-{/if}
-
-<br />
-<br />
-<br />
-<br />

@@ -31,10 +31,5 @@ Left column menu.
 		{$view->element("prevnext")}
 	
 	{/if}
-
-	{if !empty($method) && $method != "categories"}
-		{$view->element('select_categories')}
-	{/if}
-
 </div>
 
