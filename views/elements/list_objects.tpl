@@ -116,26 +116,26 @@ $(document).ready(function(){
 			<td class="checklist">
 			{if !empty($objects[i].start_date) && ($objects[i].start_date|date_format:"%Y%m%d") > ($smarty.now|date_format:"%Y%m%d")}
 			
-				<img title="{t}object scheduled in the future{/t}" src="{$html->webroot}img/iconFuture.png" style="height:28px; vertical-align:top;">
+				<img title="{t}object scheduled in the future{/t}" src="{$html->webroot}img/iconFuture.png" >
 			
 			{elseif !empty($objects[i].end_date) && ($objects[i].end_date|date_format:"%Y%m%d") < ($smarty.now|date_format:"%Y%m%d")}
 			
-				<img title="{t}object expired{/t}" src="{$html->webroot}img/iconPast.png" style="height:28px; vertical-align:top;">
+				<img title="{t}object expired{/t}" src="{$html->webroot}img/iconPast.png" >
 			
 			{elseif (!empty($objects[i].start_date) && (($objects[i].start_date|date_format:"%Y%m%d") == ($smarty.now|date_format:"%Y%m%d"))) or ( !empty($objects[i].end_date) && (($objects[i].end_date|date_format:"%Y%m%d") == ($smarty.now|date_format:"%Y%m%d")))}
 			
-				<img title="{t}object scheduled today{/t}" src="{$html->webroot}img/iconToday.png" style="height:28px; vertical-align:top;">
+				<img title="{t}object scheduled today{/t}" src="{$html->webroot}img/iconToday.png" >
 
 			{/if}
 			
 			{if !empty($objects[i].num_of_permission)}
-				<img title="{t}permissions set{/t}" src="{$html->webroot}img/iconLocked.png" style="height:28px; vertical-align:top;">
+				<img title="{t}permissions set{/t}" src="{$html->webroot}img/iconLocked.png">
 			{/if}
 			
 			{if (empty($objects[i].fixed))}
-				<input style="margin-top:8px;" type="checkbox" name="objects_selected[]" class="objectCheck" title="{$objects[i].id}" value="{$objects[i].id}" />
+				<input type="checkbox" name="objects_selected[]" class="objectCheck" title="{$objects[i].id}" value="{$objects[i].id}" />
 			{else}
-				<img title="{t}fixed object{/t}" src="{$html->webroot}img/iconFixed.png" style="margin-top:8px; height:12px;" />
+				<img title="{t}fixed object{/t}" src="{$html->webroot}img/iconFixed.png" />
 			{/if}
 
 
@@ -179,63 +179,94 @@ $(document).ready(function(){
 </table>
 
 <br />
-	
-{$view->element('list_objects_bulk')}
+{if strcmp($conf->majorVersion, "3.4") < 0}
+	{if !empty($objects)}
 
-{*
+		<div style="white-space:nowrap">
+			
+			<label for="selectAll"><input type="checkbox" class="selectAll" id="selectAll"/> {t}(un)select all{/t}</label>
+			&nbsp;&nbsp;&nbsp
+			{t}Go to page{/t}: {$beToolbar->changePageSelect('pagSelectBottom')} 
+			&nbsp;
+			{t}of{/t}&nbsp;
+			{if ($beToolbar->pages()) > 0}
+			{$beToolbar->last($beToolbar->pages(),'',$beToolbar->pages())}
+			{else}1{/if}
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			{t}Dimensions{/t}: {$beToolbar->changeDimSelect('selectTop')} &nbsp;
+			
+			&nbsp;&nbsp;&nbsp;
+			&nbsp;&nbsp;
+			{$beToolbar->next('next','','next')}  <span class="evidence"> &nbsp;</span>	
+			| &nbsp;&nbsp;
+			{$beToolbar->prev('prev','','prev')}  <span class="evidence"> &nbsp;</span>
+		</div>
 
-{t}change status to{/t}: <select style="width:75px" id="newStatus" name="newStatus">
-								{html_options options=$conf->statusOptions}
-							</select>
-			<input id="changestatusSelected" type="button" value=" ok " class="opButton"/>
-	<hr />
-	
-	{if !empty($tree)}
-		{assign var='named_arr' value=$view->params.named}
-		{if empty($named_arr.id)}
-			{t}copy{/t}
-		{else}
-			<select id="areaSectionAssocOp" name="areaSectionAssocOp" style="width:75px">
-				<option value="copy"> {t}copy{/t} </option>
-				<option value="move"> {t}move{/t} </option>
-			</select>
-		{/if}
-		&nbsp;{t}to{/t}:  &nbsp;
+		<br />
 
-		<select id="areaSectionAssoc" class="areaSectionAssociation" name="data[destination]">
-		{$beTree->option($tree)}
-		</select>
+		<div class="tab"><h2>{t}Bulk actions on{/t}&nbsp;<span class="selecteditems evidence"></span> {t}selected records{/t}</h2></div>
+		<div>
 
-		<input type="hidden" name="data[source]" value="{$named_arr.id|default:''}" />
-		<input id="assocObjects" type="button" value=" ok " />
-		<hr />
-		
-		{if !empty($named_arr.id)}
-			{assign var='filter_section_id' value=$named_arr.id}
-			{assign var='filter_section_name' value=$pubSel.title|default:$sectionSel.title}
-			<input id="removeFromAreaSection" type="button" value="{t}Remove selected from{/t} '{$filter_section_name}'" class="opButton" />
-			<hr/>
-		{/if}
-	{/if}
+			{*
 
-	{if !empty($categories)}
-		{t}category{/t}
-		<select id="objCategoryAssoc" class="objCategoryAssociation" name="data[category]">
-		<option value="">--</option>
-		{foreach from=$categories item='category' key='key'}
-		{if !empty($named_arr.category) && ($key == $named_arr.category)}{assign var='filter_category_name' value=$category}{/if}
-		<option value="{$key}">{$category}</option>
-		{/foreach}
-		</select>
-		<input id="assocObjectsCategory" type="button" value="{t}Add association{/t}" class="opButton"/>
-		<hr />
-		{if !empty($named_arr.category)}
-			{assign var='filter_category_id' value=$named_arr.category}
-			<input id="disassocObjectsCategory" type="button" value="{t}Remove selected from category{/t} '{$filter_category_name}'" class="opButton" />
-			<input id="filter_category" type="hidden" name="filter_category" value="{$filter_category_id}" />
+			{t}change status to{/t}: <select style="width:75px" id="newStatus" name="newStatus">
+									{html_options options=$conf->statusOptions}
+								</select>
+				<input id="changestatusSelected" type="button" value=" ok " class="opButton"/>
 			<hr />
-		{/if}
-	{/if}
-	
+			
+			{if !empty($tree)}
+				{assign var='named_arr' value=$view->params.named}
+				{if empty($named_arr.id)}
+					{t}copy{/t}
+				{else}
+					<select id="areaSectionAssocOp" name="areaSectionAssocOp" style="width:75px">
+						<option value="copy"> {t}copy{/t} </option>
+						<option value="move"> {t}move{/t} </option>
+					</select>
+				{/if}
+				&nbsp;{t}to{/t}:  &nbsp;
 
-*}
+				<select id="areaSectionAssoc" class="areaSectionAssociation" name="data[destination]">
+				{$beTree->option($tree)}
+				</select>
+
+				<input type="hidden" name="data[source]" value="{$named_arr.id|default:''}" />
+				<input id="assocObjects" type="button" value=" ok " />
+				<hr />
+				
+				{if !empty($named_arr.id)}
+					{assign var='filter_section_id' value=$named_arr.id}
+					{assign var='filter_section_name' value=$pubSel.title|default:$sectionSel.title}
+					<input id="removeFromAreaSection" type="button" value="{t}Remove selected from{/t} '{$filter_section_name}'" class="opButton" />
+					<hr/>
+				{/if}
+			{/if}
+
+			{if !empty($categories)}
+				{t}category{/t}
+				<select id="objCategoryAssoc" class="objCategoryAssociation" name="data[category]">
+				<option value="">--</option>
+				{foreach from=$categories item='category' key='key'}
+				{if !empty($named_arr.category) && ($key == $named_arr.category)}{assign var='filter_category_name' value=$category}{/if}
+				<option value="{$key}">{$category}</option>
+				{/foreach}
+				</select>
+				<input id="assocObjectsCategory" type="button" value="{t}Add association{/t}" class="opButton"/>
+				<hr />
+				{if !empty($named_arr.category)}
+					{assign var='filter_category_id' value=$named_arr.category}
+					<input id="disassocObjectsCategory" type="button" value="{t}Remove selected from category{/t} '{$filter_category_name}'" class="opButton" />
+					<input id="filter_category" type="hidden" name="filter_category" value="{$filter_category_id}" />
+					<hr />
+				{/if}
+			{/if}
+			
+
+		*}
+		<input id="deleteSelected" type="button" value="X {t}Delete selected items{/t}"/>
+	</div>
+	{/if}
+{else}
+	{$view->element('list_objects_bulk')}
+{/if}

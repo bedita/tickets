@@ -14,8 +14,7 @@ Left column menu.
 	<div class="modules">
 		<label class="{$moduleName}" rel="{$back}">{t}{$currentModule.label}{/t}</label>
 	</div> 
-	
-	
+
 	{if !empty($method) && $method != "index" && $method != "categories"}
 	<div class="insidecol">
 		<input class="bemaincommands" type="button" value=" {t}Save{/t} " name="save" id="saveBEObject" />
@@ -29,7 +28,13 @@ Left column menu.
 	</div>
 	
 		{$view->element("prevnext")}
-	
+
+	{/if}
+
+	{if strcmp($conf->majorVersion, "3.3") < 0}
+		{if !empty($method) && $method != "categories"}
+			{$view->element('select_categories')}
+		{/if}
 	{/if}
 </div>
 

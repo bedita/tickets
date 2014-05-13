@@ -9,7 +9,7 @@
 				<select name="data[ticket_status]" id="ticketStatus">
 				{assign var="prevsta" value="draft"}
 				{foreach item=sta key='key' from=$conf->ticketStatus}
-					{if $sta!=$prevsta}<option onclick="this.blur()" disabled="">---- {$sta|replace:"on":"open"|replace:"off":"closed"} states ----</option>{/if}					
+					{if $sta!=$prevsta}<option onclick="this.blur()" disabled="">| {$sta|replace:"on":"open"|replace:"off":"closed"} states |</option>{/if}					
 					<option {if $key==$object.ticket_status|default:''}selected="selected"{/if} value="{$key}">{$key}</option>		
 				{assign var="prevsta" value=$sta}	
 				{/foreach}

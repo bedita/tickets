@@ -2,6 +2,7 @@
 <div id="ticketfilter">
 	<form id="formFilter" action="{$beurl->getUrl(['page', 'dim', 'dir', 'order'])}" method="post">
 		<table class="filters" style="width:100%">
+			{if !empty($view->SessionFilter)}
 			<tr>
 				<th><label>{t}categories{/t}:</label></th>
 				<td colspan="100">
@@ -9,7 +10,7 @@
 						<option value="">{t}all{/t}</option>
 						{foreach $categories as $catId => $catLabel}
 							{strip}
-							<option value="{$catId}" {if $view->SessionFilter->read('category') == $catId}selected="selected"{/if}>
+							<option value="{$catId}"{if $view->SessionFilter->read('category') == $catId}selected="selected"{/if}>
 								{$catLabel}
 							</option>
 							{/strip}
@@ -17,7 +18,6 @@
 					</select>
 				</td>
 			</tr>
-
 			<tr>
 				<th><label>{t}on position{/t}:</label></th>
 				<td>
@@ -30,7 +30,7 @@
 					{/if}
 				</td>
 			</tr>
-		
+			{/if}
 			<tr>			
 			{assign var="prevsta" value="draft"}
 				<th>
@@ -48,11 +48,11 @@
 					</style>
 					<table class="ticket-status">
 						<tr>
-							<td>
+							<td style="vertical-align: top">
 						{foreach item=sta key='key' from=$conf->ticketStatus}
 							{if $prevsta!=$sta}
 								</td>
-								<td>
+								<td style="vertical-align: top">
 							{/if}
 							<span>{t}{$key}{/t}:</span>
 							<input type="checkbox" value="{$key}" name="data[status][{$key}]" class="filterTicket" rel="{$sta}" id="status_{$key}" {if (empty($filter.f_status) && $sta != "off") || !empty($filter.f_status[$key])}checked="checked"{/if}/><br>
@@ -62,7 +62,14 @@
 					</table>
 				</td>
 			</tr>
-
+			<tr>
+				<th><label>{t}hide closed tickets{/t}: </label></th>
+				<td>				
+					{assign var="hide_off" value=$filter.hide_status_off|default:'false'}
+					<input type="checkbox" name="data[hide_status_off]" id="filterHideClosed" 
+					{if ($hide_off == 'true')}checked="checked"{/if} style="vertical-align: bottom;"/>
+				</td>
+			</tr>
 			<tr>
 				<th><label>{t}reporter{/t}:</label></th>
 				<td>
@@ -94,14 +101,6 @@
 						<option value="{$sev}" {if (!empty($filter.f_severity) && ($filter.f_severity == $sev))}selected="selected"{/if}>{$sev}</option>
 					{/foreach}
 					</select>
-				</td>
-				</tr>
-			<tr>
-				<th><label>{t}hide closed tickets{/t}: </label></th>
-				<td>				
-					{assign var="hide_off" value=$filter.hide_status_off|default:'false'}
-					<input type="checkbox" name="data[hide_status_off]" id="filterHideClosed" 
-					{if ($hide_off == 'true')}checked="checked"{/if} style="vertical-align: bottom;"/>
 				</td>
 			</tr>
 			<tr>
