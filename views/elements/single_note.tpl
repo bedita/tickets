@@ -8,8 +8,6 @@
     </table>
     <p class="editornotes">{$note.description|nl2br}</p>
     {if $note.user_created == $BEAuthUser.id}
-    	<input type="button" rel="{$note.id}" 
-    	style="font-size:9px !important; text-transform:lowercase; margin:0px 0px 0px 120px;" 
-    	name="deletenote" value="{t}delete{/t}" />
+    	<input type="button" rel="{$note.id}" style="float: right" name="deletenote" value="{t}delete{/t}" />
 	{/if}
 </div>

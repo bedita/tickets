@@ -117,7 +117,7 @@ function refreshNoteList(delButton) {
 
 	<div class="tab"><h2>{t}Notes{/t}</h2></div>
  
-	<div id="editornotes" style="padding-left:10px">
+	<div id="editornotes">
 
 	{strip}
 
@@ -140,14 +140,12 @@ function refreshNoteList(delButton) {
 		</tr>
 		</table>	
 		<textarea id="notetext" name="data[description]" style="width: 100%"></textarea>
-		<input type="submit" style="margin:10px" value="{t}send{/t}" />
+		<input type="submit" style="margin:10px 10px 10px 0px;" value="{t}send{/t}"  />
 		<input type="button" id="saveNoteAndClose" value="{t}send & close{/t}"{if $conf->ticketStatus[$object.ticket_status] == "off"}disabled{/if} />
 		</form>
 		
 		<br style="clear:both" />
 		<div class="loader" id="noteloader" style="clear:both">&nbsp;</div>
-	
-
 	
 	{/strip}
 	</div>
