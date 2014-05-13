@@ -24,5 +24,8 @@ $(document).ready(function(){
 		$("#modalmain").empty().css({height: '80px'}).addClass("modaloader");
 	});
 	
+	$('#ticketStatus').change(function () {
+		$('#status').val(ts[this.value]);
+	});
 
 });

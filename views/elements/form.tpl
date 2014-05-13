@@ -12,15 +12,7 @@ function relateTicketToUsers(ids,users,userTicketRelation) {
 }
 
 var ts = {{/literal}{foreach item='val' key='key' from=$conf->ticketStatus}"{$key}":"{$val}",{/foreach}"":""{literal}}{/literal}
-{literal}
-
-$(document).ready(function(){
-	$('#ticketStatus').change(function () {
-		$('#status').val(ts[this.value]);
-	});
-});
 </script>
-{/literal}
 
 
 
