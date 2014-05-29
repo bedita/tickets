@@ -1,6 +1,5 @@
 
 <script type="text/javascript">
-<!--
 var message = "{t}Are you sure that you want to delete the item?{/t}" ;
 var messageSelected = "{t}Are you sure that you want to delete selected items?{/t}" ;
 var urls = Array();
@@ -15,6 +14,12 @@ var no_items_checked_msg = "{t}No items selected{/t}";
 var sel_status_msg = "{t}Select a status{/t}";
 var sel_category_msg = "{t}Select a category{/t}";
 var sel_copy_to_msg = "{t}Select a destination to 'copy to'{/t}";
+</script>
+
+{if strnatcmp($conf->majorVersion, '3.3') > 0}
+	{$html->script('fragments/list_objects.js', false)}
+{else}
+<script>
 {literal}
 function count_check_selected() {
 	var checked = 0;
@@ -81,12 +86,11 @@ $(document).ready(function(){
 		$("#formObject").submit() ;
 	});
 });
-
-
 {/literal}
-
-//-->
 </script>
+{/if}
+
+<form method="post" action="" id="formObject">
 
 	<input type="hidden" name="data[id]"/>
 
@@ -270,3 +274,5 @@ $(document).ready(function(){
 {else}
 	{$view->element('list_objects_bulk')}
 {/if}
+
+</form>

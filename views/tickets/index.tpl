@@ -21,11 +21,9 @@
 {$view->element("toolbar")}
 
 <div class="mainfull">
-	<form method="post" action="" id="formObject">
 
 	{$view->element("filters")}
-	
+		
 	{$view->element("list_objects")}
 
-	</form>
 </div>
