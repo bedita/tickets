@@ -106,8 +106,7 @@ var ts = {{/literal}{foreach item='val' key='key' from=$conf->ticketStatus}"{$ke
 	{$view->element("form_file_list", $params)}
 {/if}
 
-{assign_associative var=available_rel seeTicket="seeTicket" ticketRelated="ticketRelated"}
-{assign_associative var="params" object_type_id=$objectTypeId availabeRelations=$available_rel}
+{assign_associative var="params" object_type_id=$objectTypeId}
 {$view->element("form_assoc_objects", $params)}
 
 </form>
