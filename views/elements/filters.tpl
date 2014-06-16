@@ -56,7 +56,7 @@
 								<td style="vertical-align: top">
 							{/if}
 							<span>{t}{$key}{/t}:</span>
-							<input type="checkbox" value="{$key}" name="data[status][{$key}]" class="filterTicket" rel="{$sta}" id="status_{$key}" {if (empty($filter.f_status) && $sta != "off") || !empty($filter.f_status[$key])}checked="checked"{/if}/><br>
+							<input type="checkbox" value="{$key}" name="data[status][{$key}]" class="filterTicket" rel="{$sta}" id="status_{$key}" {if in_array($key, $filter['Ticket.ticket_status'])}checked="checked"{/if}/><br>
 							{$prevsta=$sta}	
 						{/foreach}
 						</tr>
@@ -66,9 +66,9 @@
 			<tr>
 				<th><label>{t}hide closed tickets{/t}: </label></th>
 				<td>				
-					{assign var="hide_off" value=$filter.hide_status_off|default:'false'}
+					{assign var="hide_off" value=$filter.hide_status_off|default:false}
 					<input type="checkbox" name="data[hide_status_off]" id="filterHideClosed" 
-					{if ($hide_off == 'true')}checked="checked"{/if} style="vertical-align: bottom;"/>
+					{if ($hide_off)}checked="checked"{/if} style="vertical-align: bottom;"/>
 				</td>
 			</tr>
 			<tr>
@@ -77,7 +77,7 @@
 					<select name="data[reporter]" class="filterTicket">
 						<option value="">all</option>
 						{foreach item=reporter key='key' from=$reporters}
-						<option value="{$reporter.User.id}" {if (!empty($filter.f_reporter) && ($filter.f_reporter == $reporter.User.id))}selected="selected"{/if}>{$reporter.User.userid}</option>
+						<option value="{$reporter.User.id}" {if (!empty($filter['BEObject.user_created']) && ($filter['BEObject.user_created'] == $reporter.User.id))}selected="selected"{/if}>{$reporter.User.userid}</option>
 						{/foreach}
 					</select>
 				</td>
@@ -88,7 +88,7 @@
 					<select name="data[assigned_to]" class="filterTicket">
 						<option value="">all</option>
 						{foreach item=user key='key' from=$assignedUsers}
-						<option value="{$user.User.id}" {if !empty($filter.f_assigned_to) && $filter.f_assigned_to == $user.User.id}selected="selected"{/if}>{$user.User.userid}</option>
+						<option value="{$user.User.id}" {if !empty($filter['ObjectUser.user_id']) && $filter['ObjectUser.user_id'] == $user.User.id}selected="selected"{/if}>{$user.User.userid}</option>
 						{/foreach}
 					</select>
 				</td>
@@ -99,7 +99,7 @@
 					<select name="data[severity]" id="ticketSev" class="filterTicket">
 						<option value="">all</option>
 					{foreach item=sev from=$conf->ticketSeverity}
-						<option value="{$sev}" {if (!empty($filter.f_severity) && ($filter.f_severity == $sev))}selected="selected"{/if}>{$sev}</option>
+						<option value="{$sev}" {if (!empty($filter['Ticket.severity']) && ($filter['Ticket.severity'] == $sev))}selected="selected"{/if}>{$sev}</option>
 					{/foreach}
 					</select>
 				</td>

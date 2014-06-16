@@ -35,50 +35,89 @@ class TicketsController extends ModulesController {
 		BeLib::getObject('BeConfigure')->loadPluginLocalConfig($this->moduleName);
 	}
 
-	public function index($id = null, $order = "", $dir = true, $page = 1, $dim = 20) {
-		$conf  = Configure::getInstance() ;
-		$filter["object_type_id"] = array($conf->objectTypes['ticket']["id"]);
-		$filter["user_created"] = "";
-		$filter["Ticket.severity"] =  (!empty($this->data['severity'])) ? $this->data['severity'] : "";
-		if(!empty($this->data['status'])) {
-			$filter["Ticket.ticket_status"] = array_keys($this->data['status']);
+	public function index($id = null, $order = '', $dir = true, $page = 1, $dim = 20) {
+		$conf = Configure::getInstance();
+
+		// if BEdita support session filter get current session filter else set it to empty array
+		$sessionFilterSupported = (strcmp($conf->majorVersion, '3.3.0') >= 0) ? true : false;
+		$currentFilter = ($sessionFilterSupported) ? $this->SessionFilter->read() : array();
+
+		if (!empty($this->params['form']['cleanFilter'])) {
+			$this->data = array();
+		}
+
+		$filter['object_type_id'] = array($conf->objectTypes['ticket']['id']);
+		$filter['user_created'] = '';
+
+		if (!empty($this->data['severity'])) {
+			$filter['Ticket.severity'] = $this->data['severity'];
+			if ($sessionFilterSupported) {
+				$this->SessionFilter->add('Ticket.severity', $this->data['severity']);
+			}
 		} else {
-			$ticketStatus = array_intersect($conf->ticketStatus, array("draft", "on"));
-			$filter["Ticket.ticket_status"] = array_keys($ticketStatus);
+			$filter['Ticket.severity'] = (!empty($currentFilter['Ticket.severity'])) ? $currentFilter['Ticket.severity'] : '';
 		}
-		if(empty($this->data) || !empty($this->data['hide_status_off'])) {
-			$filter["status"] = "<> 'off'";
+
+		if (!empty($this->data['status'])) {
+			$ts = array_keys($this->data['status']);
+			$filter['Ticket.ticket_status'] = $ts;
+			if ($sessionFilterSupported) {
+				$this->SessionFilter->add('Ticket.ticket_status', $ts);
+			}
+		} elseif (!empty($currentFilter['Ticket.ticket_status'])) {
+			$filter['Ticket.ticket_status'] = $currentFilter['Ticket.ticket_status'];
+		} else {
+			$ticketStatus = array_intersect($conf->ticketStatus, array('draft', 'on'));
+			$filter['Ticket.ticket_status'] = array_keys($ticketStatus);
 		}
+
+		if (empty($this->data)) {
+			$filter['status'] = (!empty($currentFilter['status'])) ? $currentFilter['status'] : array('NOT' => 'off');
+		} elseif (!empty($this->data['hide_status_off'])) {
+			$filter['status'] = array('NOT' => 'off');
+		} else {
+			$filter['status'] = array('on', 'draft', 'off');
+		}
+		if ($sessionFilterSupported) {
+			$this->SessionFilter->add('status', $filter['status']);
+		}
+		$hideStatusOff = (!count(array_diff(array('on', 'draft', 'off'), $filter['status'])))? false : true;
 
 		if (!empty($this->data['assigned_to'])) {
-			$filter["ObjectUser.switch"] = "assigned";
-			$filter["ObjectUser.user_id"] = $this->data['assigned_to'];
+			$filter['ObjectUser.switch'] = 'assigned';
+			$filter['ObjectUser.user_id'] = $this->data['assigned_to'];
+			if ($sessionFilterSupported) {
+				$this->SessionFilter->add('ObjectUser.switch', 'assigned');
+				$this->SessionFilter->add('ObjectUser.user_id', $filter['ObjectUser.user_id']);
+			}
+		} elseif (!empty($currentFilter['ObjectUser.switch'])) {
+			$filter['ObjectUser.switch'] = $currentFilter['ObjectUser.switch'];
+			$filter['ObjectUser.user_id'] = $currentFilter['user_id'];
 		}
 
-		$filter["exp_resolution_date"] = "";
-		$filter["BEObject.user_created"] = (!empty($this->data['reporter'])) ? $this->data['reporter'] : "";
-		$filter["count_annotation"] = array("EditorNote");
+		if (!empty($this->data['reporter'])) {
+			$filter['BEObject.user_created'] = $this->data['reporter'];
+			if ($sessionFilterSupported) {
+				$this->SessionFilter->add('BEObject.user_created', $filter['BEObject.user_created']);
+			}
+		} elseif (!empty($currentFilter['BEObject.user_created'])) {
+			$filter['BEObject.user_created'] = $currentFilter['BEObject.user_created'];
+		} else {
+			$filter['BEObject.user_created'] = '';
+		}
+
+		$filter['exp_resolution_date'] = '';
+		$filter['count_annotation'] = array('EditorNote');
+
 		$f = $filter;
 		$this->paginatedList($id, $filter, $order, $dir, $page, $dim);
-		$this->loadCategories($filter["object_type_id"]);
+		$this->loadCategories($filter['object_type_id']);
 		$this->loadReporters();
 		$this->loadAssignedUsers();
-		if(!empty($this->data['status'])) {
-			$f["f_status"] = $this->data['status'];
-		}
-		if(!empty($this->data['reporter'])) {
-			$f["f_reporter"] = $this->data['reporter'];
-		}
-		if(!empty($this->data['severity'])) {
-			$f["f_severity"] = $this->data['severity'];
-		}
-		if(empty($this->data) || !empty($this->data['hide_status_off'])) {
-			$f["hide_status_off"] = "true";
-		}
-		if (!empty($this->data['assigned_to'])) {
-			$f["f_assigned_to"] = $this->data['assigned_to'];
-		}
-		$this->set("filter",$f);
+
+		$f['hide_status_off'] = $hideStatusOff;
+
+		$this->set('filter', $f);
 	}
 
 	public function view($id = null) {
