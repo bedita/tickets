@@ -289,7 +289,7 @@ class TicketsController extends ModulesController {
 		if(empty($this->data["id"]))
 			throw new BeditaException( __("No data", true));
 		$this->Transaction->begin() ;
-		if(!ClassRegistry::init("Category")->del($this->data["id"])) {
+		if(!ClassRegistry::init("Category")->delete($this->data["id"])) {
 			throw new BeditaException(__("Error saving tag", true), $this->Category->validationErrors);
 		}
 		$this->Transaction->commit();
