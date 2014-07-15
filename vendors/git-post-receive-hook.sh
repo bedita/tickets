@@ -15,14 +15,15 @@ read oldrev newrev
 url=$(git config tickets.url)
 userid=$(git config tickets.user)
 passwd=$(git config tickets.passwd)
-logfile=$(git config tickets.log)
+# local log file path
+#logfile=$(git config tickets.log)
+# repo logic name (must be the same in bedita.cfg.php server side)
+repo=$(git config tickets.repo)
 
-cat "oldrev: $oldrev - newrev: $newrev" >> $logfile
+echo "oldrev: $oldrev - newrev: $newrev"
 
 # formatted commit data to send
-COMMIT_DATA=`git log --pretty=format:"%cn|%H|%s###" $oldrev..$newrev | tr "\n" " "`
+commitData=`git log --pretty=format:"%cn|%H|%s###" $oldrev..$newrev | tr "\n" " "`
 
-repo=`git remote -v | head -n1 | awk '{print $2}' | sed 's/.*\///'`
-
-cat "repo=$repo - userid=$userid - passwd=$passwd - commit_data=$COMMIT_DATA - url=$url" >> $logfile
-curl --request POST --data-urlencode "repo=$repo" --data-urlencode "userid=$userid" --data-urlencode "passwd=$passwd" --data-urlencode "commit_data=$COMMIT_DATA" $url >> $logfile
+echo "repo=$repo - userid=$userid - passwd=$passwd - commit_data=$commitData - url=$url" >> $logfile
+curl --request POST --data-urlencode "repo=$repo" --data-urlencode "userid=$userid" --data-urlencode "passwd=$passwd" --data-urlencode "commit_data=$commitData" $url >> $logfile
