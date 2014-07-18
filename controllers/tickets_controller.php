@@ -106,7 +106,7 @@ class TicketsController extends ModulesController {
 			$filter['BEObject.user_created'] = '';
 		}
 
-		$filter['exp_resolution_date'] = '';
+		$filter['Ticket.exp_resolution_date'] = '';
 		$filter['count_annotation'] = array('EditorNote');
 
 		$f = $filter;
