@@ -14,7 +14,7 @@
 				{assign var="prevsta" value=$sta}	
 				{/foreach}
 				</select>
-				<input type="hidden" name="data[status]" id="status" />
+				<input type="hidden" name="data[status]" id="status" value="{$object.status|default:'draft'}"/>
 			</td>
 		</tr>
 		<tr>
