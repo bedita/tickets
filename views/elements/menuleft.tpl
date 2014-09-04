@@ -1,7 +1,7 @@
 {$view->set("method", $method)}
 <div class="primacolonna">
 
-	<div class="modules"><label class="bedita" rel="{$html->url('/')}">{$conf->projectName|default:$conf->userVersion}</label></div>
+	<div class="modules"><label class="bedita" rel="{$html->url('/')}">{$conf->projectName|default:''}</label></div>
 
 	{if strcmp($conf->majorVersion, "3.2") < 0}
 		{$view->element("messages")}
