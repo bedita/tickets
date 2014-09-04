@@ -4,6 +4,17 @@
 		<input type="hidden" name="cleanFilter" value=""/>
 		<table class="filters" style="width:100%">
 			{if !empty($view->SessionFilter)}
+	        <tr>
+	            <th><label>{t}search word{/t}:</label></th>
+	            <td colspan="6">
+	                <input type="text" placeholder="{t}search word{/t}" name="filter[query]" id="search" style="width:255px" value="{$view->SessionFilter->read('query')}"/>&nbsp;
+	                <input type="checkbox"
+	                    {if $view->SessionFilter->check('substring') || !$view->SessionFilter->check()}
+	                        checked="checked"
+	                    {/if} 
+	                    id="modalsubstring" name="filter[substring]" /> <label>{t}substring{/t}</label>
+	            </td>
+	        </tr>
 			<tr>
 				<th><label>{t}categories{/t}:</label></th>
 				<td colspan="100">
