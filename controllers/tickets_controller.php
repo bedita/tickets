@@ -31,6 +31,8 @@ class TicketsController extends ModulesController {
 
 	protected $moduleName = 'tickets';
 
+	protected $categorizableModels = array('Ticket');
+
 	protected function beditaBeforeFilter() {
 		BeLib::getObject('BeConfigure')->loadPluginLocalConfig($this->moduleName);
 	}
@@ -226,19 +228,6 @@ class TicketsController extends ModulesController {
 		$this->showCategories($this->Ticket);
 	}
 
-	public function saveCategories() {
-		$this->checkWriteModulePermission();
-		if(empty($this->data["label"]))
-			throw new BeditaException( __("No data", true));
-		$this->Transaction->begin() ;
-		if(!ClassRegistry::init("Category")->save($this->data)) {
-			throw new BeditaException(__("Error saving tag", true), $this->Category->validationErrors);
-		}
-		$this->Transaction->commit();
-		$this->userInfoMessage(__("Category saved", true)." - ".$this->data["label"]);
-		$this->eventInfo("category [" .$this->data["label"] . "] saved");
-	}
-
 	public function showUsers($id = null) {
 
 		$groups = Configure::read("ticketAssignGroups");
@@ -282,19 +271,6 @@ class TicketsController extends ModulesController {
 		$this->set('users', $users);
 		$this->set('relation', $switch);
 		$this->layout = null;
-	}
-
-	public function deleteCategories() {
-		$this->checkWriteModulePermission();
-		if(empty($this->data["id"]))
-			throw new BeditaException( __("No data", true));
-		$this->Transaction->begin() ;
-		if(!ClassRegistry::init("Category")->delete($this->data["id"])) {
-			throw new BeditaException(__("Error saving tag", true), $this->Category->validationErrors);
-		}
-		$this->Transaction->commit();
-		$this->userInfoMessage(__("Category deleted", true) . " -  " . $this->data["label"]);
-		$this->eventInfo("Category " . $this->data["id"] . "-" . $this->data["label"] . " deleted");
 	}
 
 	public function closeAs() {
