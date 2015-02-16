@@ -34,7 +34,8 @@
 				<th><label>{t}on position{/t}:</label></th>
 				<td>
 					<select name="filter[parent_id]" id="parent_id" class="areaSectionAssociation">
-					{$beTree->option($tree, $view->SessionFilter->read('parent_id'))}
+						<option value="">{t}None{/t}</option>
+						{$beTree->option($tree, $view->SessionFilter->read('parent_id'))}
 					</select>
 					{if !empty($filters.treeDescendants)}
 						&nbsp;<input type="checkbox" name="filter[descendants]"
