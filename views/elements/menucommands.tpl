@@ -6,7 +6,7 @@ Left column menu.
 <div class="secondacolonna {if !empty($fixed)}fixed{/if}">
 	
 	{if !empty($method) && $method != "index" && $method != "categories"}
-		{assign var="back" value=$session->read("backFromView")}
+		{assign var="back" value=$session->read("backFromView")|escape}
 	{else}
 		{assign_concat var="back" 1=$html->url('/') 2=$currentModule.url}
 	{/if}
