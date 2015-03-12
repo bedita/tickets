@@ -96,7 +96,7 @@ class TicketNotifierBehavior extends NotifyBehavior {
 			}
 			$data['object_title'] = $note["ReferenceObject"]["title"];
 			$this->prepareAnnotationMail($model, $users);
-		} elseif ($model->name == "Ticket") {
+		} elseif ($model->name == "Ticket" && class_exists('CakeSession')) {
 			$data['author'] = $userModel->field("userid",array("id" => $data["user_modified"]));
 			// remove and create obj/user assignement/notification
 			$objectUserModel = ClassRegistry::init("ObjectUser");
