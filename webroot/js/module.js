@@ -2,9 +2,15 @@ $(document).ready(function(){
 	
 	// uncheck closed ticket status if 'hide closed tickets' is selected
 	$("#filterHideClosed").change(function() {
-		if ($("#filterHideClosed:checked").length) {
+
+		//alert($("#filterHideClosed:checked").length);
+		if ($("#filterHideClosed:checked").length > 0) {
 			$("input[id^='status_'][rel=off]").each(function() {
 				$(this).attr("checked", false);
+			});
+		} else {
+			$("input[id^='status_'][rel=off]").each(function() {
+				$(this).attr("checked", true);
 			});
 		}
 	});
