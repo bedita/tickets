@@ -362,14 +362,14 @@ class TicketsController extends ModulesController {
 							"OK"	=> "/tickets/view/".@$this->Ticket->id,
 							"ERROR"	=> $this->referer()
 							),
-			"saveCategories" 	=> array(
-							"OK"	=> "/tickets/categories",
-							"ERROR"	=> "/tickets/categories"
-							),
 			"deleteCategories" 	=> array(
 							"OK"	=> "/tickets/categories",
 							"ERROR"	=> "/tickets/categories"
 							),
+            'bulkCategories' => array(
+                'OK' => '/tickets/categories',
+                'ERROR' => '/tickets/categories',
+            ),
 			"delete" =>	array(
 							"OK"	=> $this->fullBaseUrl . $this->Session->read('backFromView'),
 							"ERROR"	=> $this->referer()
