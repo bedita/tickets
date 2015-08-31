@@ -1,6 +1,6 @@
 <script type="text/javascript">
 var urlLoadNote = "{$html->url('/tickets/loadNote')}";
-var urlDelNote = "{$html->url('/pages/deleteNote')}";
+var urlDelNote = "{$html->url('/tickets/deleteNote')}";
 var comunicationErrorMsg = "{t}Communication error{/t}";
 var confirmDelNoteMsg = "{t}Are you sure that you want to delete the note?{/t}";
 

@@ -181,6 +181,21 @@ class TicketsController extends ModulesController {
 	}
 
     /**
+    * delete ticket thread note
+     * if it fails throw BeditaAjaxException managed like json object
+     */
+    public function deleteNote() {
+        $EditorNote = ClassRegistry::init('EditorNote');
+        $EditorNote->Behaviors->detach('Notify');
+        $EditorNote->Behaviors->attach('TicketNotifier');
+        $this->requestAction(array(
+            'controller' => 'pages',
+            'action' => 'deleteNote'
+            ),  array('form' => $this->params['form'])
+        );
+    }
+	
+	/**
      * Add notes via scripts/hooks - e.g. svn/git commits for ticket
      */
 	public function noteHook() {
