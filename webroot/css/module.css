@@ -27,8 +27,40 @@
 .unresolvable {}
 .obsolete {}
 
-ul.users-relations li{
+ul.users-relations li {
 	display:inline;
 	padding:4px 5px 4px 5px;
 	width:auto;
 }
+
+.cell.position {
+    clear: both;
+    float:none;
+    min-height:0px;
+}
+
+.cell.ticket-status {
+    clear: both;
+    float:none;
+    min-height:0px;
+    white-space:normal;
+}
+
+.cell.ticket-status UL {
+   display:inline-block;
+   white-space: nowrap;
+   border-right: 1px solid #999;
+   padding: 5px 5px 5px 10px;
+}
+
+.cell.ticket-status UL:last-child {
+    border-right: 0px solid #999;
+}
+
+.cell.ticket-status LI {
+   display:inline-block;
+   padding-right: 5px
+}
+
+
+
