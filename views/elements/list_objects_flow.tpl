@@ -1,4 +1,4 @@
-<div class="flow-wrapper">
+<div class="flow-wrapper noselect">
 {foreach $flowStatusKeys as $s}
 	<div id="flow-col-{$s@index}" class="container" style="width: {100 / $s@total - 1}%;">
 		<h1>{$s}</h1>
@@ -16,21 +16,24 @@
 
                 <table>
                     <tr>
-                        <td>{t}Status{/t}:</td>
+                        <td>{t}status{/t}:</td>
                         <td>{$o.ticket_status}</td>
                     </tr>
                     <tr>
-                        <td>{t}Creato{/t}:</td>
+                        <td>{t}created{/t}:</td>
                         <td>{$o.created|date_format:$conf->dateTimePattern}</td>
                     </tr>
                     <tr>
-                        <td>{t}Modificato{/t}:</td>
+                        <td>{t}modified{/t}:</td>
                         <td>{$o.modified|date_format:$conf->dateTimePattern}</td>
                     </tr>
                 </table>
-			</div>
-			{/foreach}
-		{/if}
+
+                <a class="edit button" href="{$html->url('view/')}{$o.id}" target="_blank">{t}open{/t}</a>
+            </div>
+            {/foreach}
+        {/if}
+
 	</div>
 {/foreach}
 </div>
@@ -46,6 +49,10 @@
 $(document).ready(function() {
     var flowElems = document.getElementsByClassName('container');
     var flowElemsArr = [].slice.call(flowElems);
-    dragula(flowElemsArr);
+    dragula(flowElemsArr, {
+        invalid: function (el) {
+            return el.tagName === 'H1';
+        }
+    });
 });
 </script>

@@ -1,4 +1,4 @@
-
+/* overwrite defaults BE styles */
 .mainfull, .main.full {
     width: 100%;
     left: auto;
@@ -13,10 +13,7 @@
 }
 
 
-
-
-
-/* dragula-specific example page styles */
+/* flow elements */
 .flow-wrapper {
     display: flex;
     justify-content: space-between;
@@ -29,14 +26,23 @@
 
 .container {
     overflow: hidden;
-    padding: 5px;
+    padding: 6px;
     background-color: #ccc;
+}
+.container > div {
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
 }
 
 .flow-item {
+    position: relative;
     margin: 10px 0 0;
     padding: 5px;
     background-color: #eee;
+    border-radius: 5px;
+
     transition: opacity 0.2s ease-in-out;
     cursor: grabbing;
     cursor: -moz-grabbing;
@@ -47,32 +53,53 @@
     font-size: 1em;
     font-weight: bold;
     font-family: sans-serif;
+    padding-right: 2em;
 }
 
 .flow-item table {
+    width: 100%;
     margin-top: 10px;
 }
 
 .flow-item td {
     padding: 0; 
+    line-height: 15px;
+}
+.flow-item td:first-child { padding-right: 10px; }
+
+.flow-item .edit {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 20px;
+    height: 20px;
+    background: transparent url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSI1MTJweCIgaGVpZ2h0PSI1MTJweCIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDUxMiA1MTIiIHhtbDpzcGFjZT0icHJlc2VydmUiPjxnPjxwYXRoIGZpbGw9IiMwMjAyMDIiIGQ9Ik00MjIuOTUzLDE3Ni4wMTljMC41NDktMC40OCwxLjA5LTAuOTc1LDEuNjEyLTEuNDk4bDIxLjc3Mi0yMS43NzJjMTIuODgzLTEyLjg4MywxMi44ODMtMzMuNzcxLDAtNDYuNjU0bC00MC40MzQtNDAuNDM0Yy0xMi44ODMtMTIuODgzLTMzLjc3MS0xMi44ODMtNDYuNjUzLDBsLTIxLjc3MiwyMS43NzJjLTAuNTIzLDAuNTIzLTEuMDE4LDEuMDY0LTEuNDk4LDEuNjEzTDQyMi45NTMsMTc2LjAxOXoiLz48cG9seWdvbiBmaWxsPSIjMDIwMjAyIiBwb2ludHM9IjExNC4zMTcsMzk3LjY4NCAxNTcuMzE3LDQ0MC42ODQgMTA2LjY1OCw0NDguMzQyIDU2LDQ1NiA2My42NTgsNDA1LjM0MSA3MS4zMTYsMzU0LjY4MyAiLz48cG9seWdvbiBmaWxsPSIjMDIwMjAyIiBwb2ludHM9IjM0OS4xNDMsMTI1LjUzNSAxMTguOTgyLDM1NS42OTQgMTA2LjU0MSwzNDMuMjUzIDMzNi43MDEsMTEzLjA5NCAzMjQuMjYsMTAwLjY1MyA4MS42NTksMzQzLjI1MyAxNjguNzQ3LDQzMC4zNDEgNDExLjM0OCwxODcuNzQgIi8+PC9nPjwvc3ZnPg==) 0 0 no-repeat;
+    background-size: 100%;
+
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 
 
-
-
-
-
-
-.container > div {
-  cursor: move;
-  cursor: grab;
-  cursor: -moz-grab;
-  cursor: -webkit-grab;
+/* helper classes */
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
+
+
+
+/* dragula classes */
 .container .ex-moved {
   background-color: #e74c3c;
 }
 .container.ex-over {
   background-color: rgba(255, 255, 255, 0.3);
 }
+
