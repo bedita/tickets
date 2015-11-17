@@ -9,10 +9,11 @@
 	
 		<ul class="menuleft insidecol">
 		<li {if $method eq 'index'}class="on"{/if}>{$tr->link('Tickets', '/tickets')}</li>
-		<li {if $method eq 'categories'}class="on"{/if}>{$tr->link('Categories', '/tickets/categories')}</li>
 		{if $module_modify eq '1'}
 		<li><a href="{$html->url('/tickets/view')}">{t}Create new ticket{/t}</a></li>
 		{/if}
+		<li {if $method eq 'categories'}class="on"{/if}>{$tr->link('Categories', '/tickets/categories')}</li>
+		<li {if $method eq 'flow'}class="on"{/if}>{$tr->link('Flow view', '/tickets/flow')}</li>
 	</ul>
 
 {$view->element("export")}

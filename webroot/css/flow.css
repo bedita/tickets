@@ -1,0 +1,78 @@
+
+.mainfull, .main.full {
+    width: 100%;
+    left: auto;
+    padding: 20px;
+    margin: 0;
+}
+
+
+.primacolonna {
+    height: 110px;
+    overflow: hidden;
+}
+
+
+
+
+
+/* dragula-specific example page styles */
+.flow-wrapper {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+.flow-wrapper h1 {
+    font-size: 1.5em;
+    font-family: sans-serif;
+}
+
+.container {
+    overflow: hidden;
+    padding: 5px;
+    background-color: #ccc;
+}
+
+.flow-item {
+    margin: 10px 0 0;
+    padding: 5px;
+    background-color: #eee;
+    transition: opacity 0.2s ease-in-out;
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
+.flow-item h2 {
+    font-size: 1em;
+    font-weight: bold;
+    font-family: sans-serif;
+}
+
+.flow-item table {
+    margin-top: 10px;
+}
+
+.flow-item td {
+    padding: 0; 
+}
+
+
+
+
+
+
+
+
+.container > div {
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+.container .ex-moved {
+  background-color: #e74c3c;
+}
+.container.ex-over {
+  background-color: rgba(255, 255, 255, 0.3);
+}

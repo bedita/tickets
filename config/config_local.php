@@ -1,10 +1,10 @@
 <?php
 
-$config["ticketSeverity"] = array (
+$config["ticketSeverity"] = array(
 	 "minor", "normal", "major", "critical",
 );
 
-$config["ticketStatus"] = array (
+$config["ticketStatus"] = array(
 	"new" => "draft",
 	"reopened" => "draft",
 	"assigned" => "on",
@@ -17,8 +17,26 @@ $config["ticketStatus"] = array (
 	"duplicate" => "off"
 );
 
+$config['flowStatus'] = array(
+	'backlog' => array(
+		"new"
+	),
+	'todo' => array(
+		"reopened", "assigned"
+	),
+	'in progress' => array(
+		"analysis", "development"
+	),
+	'test' => array(
+		"test"
+	),
+	'done' => array(
+		"resolved", "unresolvable", "obsolete", "duplicate"
+	)
+);
+
 // define groups for ticket assignement, default backend authorized groups 
-$config["ticketAssignGroups"] = array (
+$config["ticketAssignGroups"] = array(
 	// "administrator",
 	// "tickets",
 );
