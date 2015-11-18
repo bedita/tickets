@@ -35,6 +35,8 @@ $config['flowStatus'] = array(
 	)
 );
 
+$config['flowShowGravatar'] = true;
+
 // define groups for ticket assignement, default backend authorized groups 
 $config["ticketAssignGroups"] = array(
 	// "administrator",

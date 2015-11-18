@@ -289,7 +289,8 @@ class TicketsController extends ModulesController {
 		$this->showCategories($this->Ticket);
 	}
 
-	public function flow($id = null, $order = '', $dir = true, $page = 1, $dim = 20) {
+	public function flow($id = null, $order = '', $dir = true, $page = 1, $dim = 50) {
+		$this->helpers[] = 'Gravatar';
 		$conf = Configure::getInstance();
 
 		// if BEdita support session filter get current session filter else set it to empty array

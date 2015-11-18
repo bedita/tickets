@@ -11,18 +11,25 @@
                 {$itemTitle = $o.description|strip_tags}
     			<div class="flow-item" title="{$itemTitle}" data-flow-id="{$o.id}">
     				{*dump var=$o*}
-    				<h2><span>#{$o.id}&nbsp;</span> {$o.title}</h2>
+    				<h2><span>#{$o.id}&nbsp;</span><br>{$o.title}</h2>
 
                     {if !empty($o.UsersAssigned)}
-                    <p>
+                    <p class="item-assign">
                         {foreach from=$o.UsersAssigned item="u" name="assigned"}
+                            {if !empty($conf->flowShowGravatar)}
+                                {$gravatar->image($u, [
+                                    'html' => [
+                                        'align' => 'center'
+                                    ]
+                                ])}
+                            {/if}
                             <span>{$u.userid}</span>
                         {/foreach}
                     </p>
                     {/if}
 
                     {if $fs@index == 0}
-                        <p><b>+</b> {$o.created|date_format:$conf->dateTimePattern}</p>
+                       
                     {/if}
 
                     <footer>
@@ -32,7 +39,8 @@
                         {if $o.num_of_editor_note|default:''}
                         <span class="item-notes">{$o.num_of_editor_note|default:''}</span>
                         {/if}
-                        <span class="item-date">{$o.modified|date_format:$conf->dateTimePattern}</span>
+                        <span class="item-create-date">{t}created{/t}: {$o.created|date_format:$conf->dateTimePattern}</span>
+                        <span class="item-modify-date">{$o.modified|date_format:$conf->dateTimePattern}</span>
                     </footer>
 
                     <a class="edit {if !empty($o.severity)}{$o.severity}{/if}" href="{$html->url('view/')}{$o.id}" target="_blank">{t}open{/t}</a>
