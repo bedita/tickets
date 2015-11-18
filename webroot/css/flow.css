@@ -53,7 +53,7 @@
     position: relative;
     overflow: hidden;
     margin: 8px 0 0;
-    padding: 5px;
+    padding: 7px 7px 5px;
     background-color: #eee;
     border-radius: 5px;
     line-height: 15px;
@@ -72,6 +72,10 @@
     font-family: sans-serif;
     padding-right: 2em;
     margin-bottom: .5em;
+}
+.flow-item h2 span {
+    color: #999;
+    font-weight: normal;
 }
 
 .flow-item table {
@@ -112,7 +116,7 @@
     margin-top: .5em;
 }
 
-.flow-item footer span {
+footer span {
     margin-right: 8px;
 }
 
@@ -134,6 +138,13 @@
     background-size: 11px;
     background-image: url(data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjEwMDAiIHdpZHRoPSI4MzQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTU3Mi41IDgxMy4zNzJxMCAyMi41IC0xNC4zNzUgMzcuNXQtMzYuODc1IDE1cS0yMS4yNSAwIC0zNy41IC0xNi4yNWwtMTY4Ljc1IC0xNjguNzUgLTMxNSAyMzYuMjUgMjM2LjI1IC0zMTUgLTE2OC43NSAtMTY4Ljc1cS0yMy43NSAtMjMuNzUgLTExLjI1IC01Ni4yNSAxMy43NSAtMzIuNSA0Ny41IC0zMi41IDE1Ny41IDAgMjcwIC01Ni4yNSA5MCAtNDUgMTUxLjI1IC0xNzEuMjUgOC43NSAtMjMuNzUgMzYuMjUgLTMxLjg3NXQ1MCAxMy4xMjVsMjA3LjUgMjA4Ljc1cTIxLjI1IDIyLjUgMTMuNzUgNTB0LTMxLjI1IDM2LjI1cS0xMjcuNSA2Mi41IC0xNzIuNSAxNTEuMjUgLTU2LjI1IDExMCAtNTYuMjUgMjY4Ljc1eiIvPjwvc3ZnPg==);
 }
+
+footer span.item-date {
+    float: right;
+    margin-right: 0;
+    font-size: 10px;
+}
+
 
 /* media queries */
 @media (max-width: 1000px) {

@@ -11,23 +11,19 @@
                 {$itemTitle = $o.description|strip_tags}
     			<div class="flow-item" title="{$itemTitle}" data-flow-id="{$o.id}">
     				{*dump var=$o*}
-    				<h2>{$o.title}</h2>
+    				<h2><span>#{$o.id}&nbsp;</span> {$o.title}</h2>
 
                     {if !empty($o.UsersAssigned)}
-                    <p>{t}assigned{/t}:
+                    <p>
                         {foreach from=$o.UsersAssigned item="u" name="assigned"}
-                        {$u.userid}
+                            <span>{$u.userid}</span>
                         {/foreach}
                     </p>
                     {/if}
 
-                    <table>
                     {if $fs@index == 0}
-                        <p>{t}created{/t}: {$o.created|date_format:$conf->dateTimePattern}</p>
-                    {else}
-                        <p>{$o.modified|date_format:$conf->dateTimePattern}</p>
+                        <p><b>+</b> {$o.created|date_format:$conf->dateTimePattern}</p>
                     {/if}
-                    </table>
 
                     <footer>
                         {if !empty($o.severity)}
@@ -36,6 +32,7 @@
                         {if $o.num_of_editor_note|default:''}
                         <span class="item-notes">{$o.num_of_editor_note|default:''}</span>
                         {/if}
+                        <span class="item-date">{$o.modified|date_format:$conf->dateTimePattern}</span>
                     </footer>
 
                     <a class="edit {if !empty($o.severity)}{$o.severity}{/if}" href="{$html->url('view/')}{$o.id}" target="_blank">{t}open{/t}</a>
