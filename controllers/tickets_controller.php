@@ -165,6 +165,52 @@ class TicketsController extends ModulesController {
 		$this->eventInfo("ticket [". $this->data["title"]."] saved");
 	}
 
+	public function saveStatus() {
+		$this->checkWriteModulePermission();
+
+		$ticketStatus = Configure::read('ticketStatus');
+		if (!empty($ticketStatus[$this->data['ticket_status']])) {
+			$objectUser = ClassRegistry::init('ObjectUser');
+			$assigned = $objectUser->find('all', array(
+				'conditions' => array(
+					'object_id' => $this->data['id'],
+					'switch' => array('assigned', 'notify')
+				),
+				'contain' => array()
+			));
+			$this->data['users'] = array('assigned' => '', 'notify' => '');
+			$users = Set::combine($assigned, '{n}.ObjectUser.id', '{n}.ObjectUser.user_id', '{n}.ObjectUser.switch');
+			if (!empty($users['assigned'])) {
+				$this->data['users']['assigned'] = implode(',', $users['assigned']);
+			}
+			if (!empty($users['notify'])) {
+				$this->data['users']['notify'] = implode(',', $users['notify']);
+			}
+			$this->data['status'] = $ticketStatus[$this->data['ticket_status']];
+
+			$ticket = ClassRegistry::init('BEObject')->find('first', array(
+				'fields' => array('title', 'description'),
+				'conditions' => array('id' => $this->data['id']),
+				'contain' => array()
+			));
+			$this->data['title'] = $ticket['BEObject']['title'];
+			$this->data['description'] = $ticket['BEObject']['description'];
+
+
+			$this->Transaction->begin();
+			$this->saveObject($this->Ticket);
+		 	$this->Transaction->commit() ;
+			$this->eventInfo('status for ticket [' . $this->data['id'] . '] changed');
+
+			$this->ResponseHandler->setType('json');
+			$this->set(array(
+				'id' => $this->data['id'],
+				'ticket_status' => $this->data['ticket_status'],
+				'_serialize' => array('id', 'ticket_status')
+			));
+		}
+	}
+
 	/**
 	 * save editor note
 	 * if it fails throw BeditaAjaxException managed like json object
@@ -320,23 +366,6 @@ class TicketsController extends ModulesController {
 		$f = $filter;
 		$this->paginatedList($id, $filter, $order, $dir, $page, $dim);
 
-
-
-		$flowStatus = Configure::read('flowStatus');
-		$flowStatusKeys = array_keys($flowStatus);
-		$objectsByStatus = array();
-		foreach ($this->viewVars['objects'] as $o) {
-			foreach ($flowStatus as $flow => $statuses) {
-				if (in_array($o['ticket_status'], $statuses)) {
-					$objectsByStatus[$flow][] = $o;
-				}
-			}
-		}
-		$this->set('flowStatusKeys', $flowStatusKeys);
-		$this->set('objectsByStatus', $objectsByStatus);
-
-
-
 		$this->loadCategories($filter['object_type_id']);
 		$this->loadReporters();
 		$this->loadAssignedUsers();
@@ -344,7 +373,22 @@ class TicketsController extends ModulesController {
 		$f['hide_status_off'] = $hideStatusOff;
 
 		$this->set('filter', $f);
+
+
+
+
+		$flowStatus = Configure::read('flowStatus');
+		$objectsByStatus = array();
+		foreach ($this->viewVars['objects'] as $o) {
+			foreach ($flowStatus as $flow => $statuses) {
+				if (in_array($o['ticket_status'], $statuses)) {
+					$objectsByStatus[$flow][$o['ticket_status']][] = $o;
+				}
+			}
+		}
+		$this->set('objectsByStatus', $objectsByStatus);
 	}
+
 
 	public function showUsers($id = null) {
 
