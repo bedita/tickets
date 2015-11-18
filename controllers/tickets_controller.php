@@ -35,6 +35,7 @@ class TicketsController extends ModulesController {
 
 	protected function beditaBeforeFilter() {
 		BeLib::getObject('BeConfigure')->loadPluginLocalConfig($this->moduleName);
+		BeLib::getObject('BeConfigure')->loadPluginLocalConfig($this->moduleName, 'module.cfg');
 	}
 
 	public function index($id = null, $order = '', $dir = true, $page = 1, $dim = 20) {
