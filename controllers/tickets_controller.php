@@ -289,7 +289,7 @@ class TicketsController extends ModulesController {
 		$this->showCategories($this->Ticket);
 	}
 
-	public function board($id = null, $order = '', $dir = true, $page = 1, $dim = 50) {
+	public function board($id = null, $order = 'severity', $dir = true, $page = 1, $dim = 200) {
 		$this->helpers[] = 'Gravatar';
 		$conf = Configure::getInstance();
 
