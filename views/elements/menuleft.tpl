@@ -13,7 +13,7 @@
 		<li><a href="{$html->url('/tickets/view')}">{t}Create new ticket{/t}</a></li>
 		{/if}
 		<li {if $method eq 'categories'}class="on"{/if}>{$tr->link('Categories', '/tickets/categories')}</li>
-		<li {if $method eq 'flow'}class="on"{/if}>{$tr->link('Flow view', '/tickets/flow')}</li>
+		<li {if $method eq 'flow'}class="on"{/if}>{$tr->link('Board view', '/tickets/board')}</li>
 	</ul>
 
 {$view->element("export")}

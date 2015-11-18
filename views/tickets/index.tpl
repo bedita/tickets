@@ -12,11 +12,9 @@
 
 {$view->element("modulesmenu")}
 
-{assign_associative var="params" method="index"}
-{$view->element("menuleft", $params)}
+{$view->element('menuleft', ['method' => 'index'])}
 
-{assign_associative var="params" method="index"}
-{$view->element("menucommands", $params)}
+{$view->element('menucommands', ['method' => 'index'])}
 
 {$view->element("toolbar")}
 
