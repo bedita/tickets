@@ -113,6 +113,7 @@
 .flow-item td:first-child { padding-right: 10px; }
 
 .flow-item .edit-btn {
+    display: none;
     position: absolute;
     top: 2px;
     right: 2px;
