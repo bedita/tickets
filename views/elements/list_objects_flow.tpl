@@ -1,3 +1,20 @@
+<div class="flow-toolbar">
+    <div class="js-toolbar-categories">
+        {foreach $categories as $categoryId => $categoryLabel}
+            {$url = '/tickets/board/toggleCategory:'|cat:$categoryId}
+            {$toggleCategoryClass = ''}
+            {if $view->SessionFilter->check('boardCategories')}
+                {if in_array($categoryId, $view->SessionFilter->read('boardCategories'))}
+                    {$toggleCategoryClass = 'on'}
+                {/if}
+            {/if}
+            <a href="{$html->url($url)}" class="filter-category-btn {$toggleCategoryClass}">{$categoryLabel}</a>
+        {/foreach}
+    </div>
+</div>
+
+
+
 <div class="flow-wrapper noselect">
 {foreach array_keys($conf->flowStatus) as $fs}
 	<div class="flow-column" style="width: {100 / $fs@total - 1}%;">
@@ -35,13 +52,9 @@
                     </p>
                     {/if}
 
-                    {if $fs@index == 0}
-                       
-                    {/if}
-
                     <footer>
                         {if !empty($o.severity)}
-                        <span class="item-severity {if !empty($o.severity)}{$o.severity}{/if}"></span>
+                        <span class="item-severity {if !empty($o.severity)}{$o.severity}{/if} js-item-severity"></span>
                         {/if}
                         {if $o.num_of_editor_note|default:''}
                         <span class="item-notes">{$o.num_of_editor_note|default:''}</span>
@@ -63,78 +76,6 @@
 </div>
 
 
-
-
-
 {$html->script('/tickets/js/dragula.min')}
 {$html->css("/tickets/css/dragula.css", null, ['inline' => false])}
-
-<script>
-$(document).ready(function() {
-
-    // dragging
-    var flowElems = document.getElementsByClassName('flow-container');
-    var flowElemsArr = [].slice.call(flowElems);
-
-    dragula(flowElemsArr, {
-        revertOnSpill: true,
-        invalid: function (el) {
-            // return el.tagName === 'LABEL';
-        }
-    }).on('drag', function (el, source) {
-        // nothing
-    }).on('drop', function (el, target, source) {
-        var sourceStatus = $(source).attr('data-flow-status');
-        var targetStatus = $(target).attr('data-flow-status');
-        var objectId = $(el).attr('data-flow-id');
-
-        if (sourceStatus != targetStatus) {
-            var postData = {
-                data: {
-                    id: objectId,
-                    ticket_status: targetStatus
-                }
-            };
-
-            $('.secondacolonna label.tickets').addClass('save');
-            $.ajax({
-                type: "POST",
-                url: "{$html->url('/tickets/saveStatus')}",
-                data: postData,
-                dataType: 'json'
-            }).done(function(response) {
-                // console.log(response);
-            }).error(function(jqXHR, textStatus, errorThrown) {
-                $(source).append($(el));
-                try {
-                    if (jqXHR.responseText) {
-                        var data = JSON.parse(jqXHR.responseText);
-                        if (typeof data != 'undefined' && data.errorMsg && data.htmlMsg) {
-                            $('#messagesDiv').empty();
-                            $('#messagesDiv').html(data.htmlMsg).triggerMessage('error');
-                        }
-                    }
-                } catch (e) {
-                    console.error("Missing responseText or it's not a valid json");
-                }
-            }).always(function() {
-                $('.secondacolonna label.tickets').removeClass('save');
-            });
-        }
-    });
-
-    // more UI
-    $('.js-flow-item').mouseenter(function() {
-        $(this).addClass('active-item');
-    }).mouseleave(function() {
-        $(this).removeClass('active-item');
-    });
-
-    
-    $('.js-flow-item').on( "dblclick", function() {
-        var url = $(this).find('.js-edit-btn').attr('href');
-        location.href = url;
-    });
-
-});
-</script>
+{$html->script('/tickets/js/board')}

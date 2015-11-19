@@ -309,10 +309,37 @@ class TicketsController extends ModulesController {
 			$filter['status'] = array('on', 'draft');
 		}
 
+		if (!empty($this->params['named']['toggleCategory'])) {
+			$boardCategoriesFilter = $this->SessionFilter->read('boardCategories');
+			if (empty($boardCategoriesFilter)) {
+				$boardCategoriesFilter = array($this->params['named']['toggleCategory']);
+			} elseif (in_array($this->params['named']['toggleCategory'], $boardCategoriesFilter)) {
+				$boardCategoriesFilter = array_diff($boardCategoriesFilter, array($this->params['named']['toggleCategory']));
+			} else {
+				$boardCategoriesFilter[] = $this->params['named']['toggleCategory'];
+			}
+
+			if (empty($boardCategoriesFilter)) {
+				$this->SessionFilter->delete('boardCategories');
+			} else {
+				$this->SessionFilter->add('boardCategories', $boardCategoriesFilter);
+				$filter['joins'] = array(
+					array(
+						'table' => 'object_categories',
+						'alias' => 'ObjectCategory',
+						'type' => 'INNER',
+						'conditions' => array(
+							'BEObject.id = ObjectCategory.object_id',
+							'ObjectCategory.category_id' => $boardCategoriesFilter
+						)
+					)
+				);
+			}
+		}
+
 		$filter['count_annotation'] = array('EditorNote');
 		$this->paginatedList($id, $filter, $order, $dir, $page, $dim);
 		$this->loadCategories($filter['object_type_id']);
-		$this->loadReporters();
 		$this->loadAssignedUsers();
 
 		$flowStatus = Configure::read('flowStatus');

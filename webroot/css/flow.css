@@ -6,11 +6,23 @@
     margin: 0;
 }
 
-
 .primacolonna {
     height: 110px;
     overflow: hidden;
 }
+
+.insidecol,
+.primacolonna *:not(:first-child) {
+    display: none;
+}
+
+
+/* severity colors */
+.minor { background-color: #1399C3; }
+.normal { background-color: #2AAF3B; }
+.major { background-color: #EAA116; }
+.critical { background-color: #F00; color: #000; }
+
 
 
 /* flow elements */
@@ -142,7 +154,6 @@
     margin-right: 10px;
 }
 
-
 .flow-item footer {
     margin-top: .5em;
 }
@@ -150,18 +161,6 @@
 footer span {
     margin-right: 8px;
 }
-
-
-.item-severity {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 3px;
-}
-.item-severity.minor { background-color: #1399C3; }
-.item-severity.normal { background-color: #2AAF3B; }
-.item-severity.major { background-color: #EAA116; }
-.item-severity.critical { background-color: #F00; }
 
 .item-notes {
     padding-left: 15px;
@@ -178,6 +177,38 @@ footer span.item-modify-date {
 }
 .flow-column:not(:first-child) .item-create-date { display: none; }
 .flow-column:first-child .item-modify-date { display: none; }
+
+.item-severity {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 3px;
+}
+
+
+
+/* flow tools */
+.flow-toolbar {
+    position: absolute;
+    top: -35px;
+    left: 340px;
+}
+.flow-toolbar label {
+    font-weight: normal;
+    text-transform: capitalize;
+    cursor: pointer;
+}
+
+.filter-category-btn {
+    display: inline-block;
+    padding: 0 8px;
+    border-radius: 5px;
+    line-height: 24px;
+    margin-right: 15px;
+    background-color: #ddd;
+}
+.filter-category-btn.on,
+.filter-category-btn:hover { background-color: #888; color: #fff; }
 
 
 
