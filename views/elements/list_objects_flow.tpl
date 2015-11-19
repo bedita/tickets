@@ -16,7 +16,7 @@
     		{if !empty($objectsByStatus[$fs][$s])}
     			{foreach $objectsByStatus[$fs][$s] as $o}
                 {$itemTitle = $o.description|strip_tags}
-    			<div class="flow-item" title="{$itemTitle}" data-flow-id="{$o.id}">
+    			<div class="flow-item js-flow-item" title="{$itemTitle}" data-flow-id="{$o.id}">
     				{*dump var=$o*}
     				<h2><span>#{$o.id}&nbsp;</span><br>{$o.title}</h2>
 
@@ -50,7 +50,7 @@
                         <span class="item-modify-date">{$o.modified|date_format:$conf->dateTimePattern}</span>
                     </footer>
 
-                    <a class="edit-btn" href="{$html->url('view/')}{$o.id}" target="_blank">{t}open{/t}</a>
+                    <a class="edit-btn js-edit-btn" href="{$html->url('view/')}{$o.id}" target="_blank">{t}open{/t}</a>
                 </div>
                 {/foreach}
             {/if}
@@ -124,15 +124,15 @@ $(document).ready(function() {
     });
 
     // more UI
-    $('.flow-item').mouseenter(function() {
+    $('.js-flow-item').mouseenter(function() {
         $(this).addClass('active-item');
     }).mouseleave(function() {
         $(this).removeClass('active-item');
     });
 
     
-    $('.flow-item').on( "dblclick", function() {
-        var url = $(this).find('a.edit').attr('href');
+    $('.js-flow-item').on( "dblclick", function() {
+        var url = $(this).find('.js-edit-btn').attr('href');
         location.href = url;
     });
 
