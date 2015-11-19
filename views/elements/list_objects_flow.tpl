@@ -2,6 +2,13 @@
 {foreach array_keys($conf->flowStatus) as $fs}
 	<div class="flow-column" style="width: {100 / $fs@total - 1}%;">
 		<h1>{$fs}</h1>
+        {if in_array($fs, $showOffColumns)}
+            {if $view->SessionFilter->check('status')}
+                <a href="{$html->url('/tickets/board')}" class="show-hide-btn" title="{t}hide off{/t}">{t}hide off{/t}</a>
+            {else}
+                <a href="{$html->url('/tickets/board/show:off')}" class="show-hide-btn off" title="{t}show all{/t}">{t}show all{/t}</a>
+            {/if}
+        {/if}
 
         {foreach $conf->flowStatus[$fs] as $s}
         <label>{$s}</label>
@@ -43,7 +50,7 @@
                         <span class="item-modify-date">{$o.modified|date_format:$conf->dateTimePattern}</span>
                     </footer>
 
-                    <a class="edit {if !empty($o.severity)}{$o.severity}{/if}" href="{$html->url('view/')}{$o.id}" target="_blank">{t}open{/t}</a>
+                    <a class="edit-btn" href="{$html->url('view/')}{$o.id}" target="_blank">{t}open{/t}</a>
                 </div>
                 {/foreach}
             {/if}
@@ -122,5 +129,12 @@ $(document).ready(function() {
     }).mouseleave(function() {
         $(this).removeClass('active-item');
     });
+
+    
+    $('.flow-item').on( "dblclick", function() {
+        var url = $(this).find('a.edit').attr('href');
+        location.href = url;
+    });
+
 });
 </script>

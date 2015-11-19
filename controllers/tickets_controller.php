@@ -298,93 +298,41 @@ class TicketsController extends ModulesController {
 		$sessionFilterSupported = (strcmp($conf->majorVersion, '3.3.0') >= 0) ? true : false;
 		$currentFilter = ($sessionFilterSupported) ? $this->SessionFilter->read() : array();
 
-		if (!empty($this->params['form']['cleanFilter'])) {
-			$this->data = array();
-		}
-
 		$filter['object_type_id'] = array($conf->objectTypes['ticket']['id']);
 		$filter['user_created'] = '';
+		$filter['Ticket.*'] = ''; 
 
-		if (!empty($this->data['severity'])) {
-			$filter['Ticket.severity'] = $this->data['severity'];
-			if ($sessionFilterSupported) {
-				$this->SessionFilter->add('Ticket.severity', $this->data['severity']);
-			}
+		if (!empty($this->params['named']['show']) && $this->params['named']['show'] == 'off') {
+			$this->SessionFilter->add('status', array('on', 'draft', 'off'));
 		} else {
-			$filter['Ticket.severity'] = (!empty($currentFilter['Ticket.severity'])) ? $currentFilter['Ticket.severity'] : '';
+			$this->SessionFilter->delete('status');
+			$filter['status'] = array('on', 'draft');
 		}
 
-		if (!empty($this->data['status'])) {
-			$ts = array_keys($this->data['status']);
-			$filter['Ticket.ticket_status'] = $ts;
-			if ($sessionFilterSupported) {
-				$this->SessionFilter->add('Ticket.ticket_status', $ts);
-			}
-		} elseif (!empty($currentFilter['Ticket.ticket_status'])) {
-			$filter['Ticket.ticket_status'] = $currentFilter['Ticket.ticket_status'];
-		} else {
-			$ticketStatus = array_intersect($conf->ticketStatus, array('draft', 'on'));
-			$filter['Ticket.ticket_status'] = array_keys($ticketStatus);
-		}
-
-		if (empty($this->data)) {
-			$filter['status'] = (!empty($currentFilter['status'])) ? $currentFilter['status'] : array('NOT' => 'off');
-		} elseif (!empty($this->data['hide_status_off'])) {
-			$filter['status'] = array('NOT' => 'off');
-		} else {
-			$filter['status'] = array('on', 'draft', 'off');
-		}
-		if ($sessionFilterSupported) {
-			$this->SessionFilter->add('status', $filter['status']);
-		}
-		$hideStatusOff = (!count(array_diff(array('on', 'draft', 'off'), $filter['status'])))? false : true;
-
-		if (!empty($this->data['assigned_to'])) {
-			$filter['ObjectUser.switch'] = 'assigned';
-			$filter['ObjectUser.user_id'] = $this->data['assigned_to'];
-			if ($sessionFilterSupported) {
-				$this->SessionFilter->add('ObjectUser.switch', 'assigned');
-				$this->SessionFilter->add('ObjectUser.user_id', $filter['ObjectUser.user_id']);
-			}
-		} elseif (!empty($currentFilter['ObjectUser.switch'])) {
-			$filter['ObjectUser.switch'] = $currentFilter['ObjectUser.switch'];
-			$filter['ObjectUser.user_id'] = $currentFilter['user_id'];
-		}
-
-		if (!empty($this->data['reporter'])) {
-			$filter['BEObject.user_created'] = $this->data['reporter'];
-			if ($sessionFilterSupported) {
-				$this->SessionFilter->add('BEObject.user_created', $filter['BEObject.user_created']);
-			}
-		} elseif (!empty($currentFilter['BEObject.user_created'])) {
-			$filter['BEObject.user_created'] = $currentFilter['BEObject.user_created'];
-		} else {
-			$filter['BEObject.user_created'] = '';
-		}
-
-		$filter['Ticket.exp_resolution_date'] = '';
 		$filter['count_annotation'] = array('EditorNote');
-
-		$f = $filter;
 		$this->paginatedList($id, $filter, $order, $dir, $page, $dim);
-
 		$this->loadCategories($filter['object_type_id']);
 		$this->loadReporters();
 		$this->loadAssignedUsers();
 
-		$f['hide_status_off'] = $hideStatusOff;
-
-		$this->set('filter', $f);
-
-
-
-
 		$flowStatus = Configure::read('flowStatus');
+		$ticketStatus = Configure::read('ticketStatus');
+		foreach ($flowStatus as $flow => $statuses) {
+			foreach ($statuses as $status) {
+				if ($ticketStatus[$status] == 'off') {
+					$showOffColumns[] = $flow;
+					break;
+				}
+			}
+		}
+		$this->set('showOffColumns', $showOffColumns);
+
 		$objectsByStatus = array();
 		foreach ($this->viewVars['objects'] as $o) {
 			foreach ($flowStatus as $flow => $statuses) {
 				if (in_array($o['ticket_status'], $statuses)) {
 					$objectsByStatus[$flow][$o['ticket_status']][] = $o;
+					break;
 				}
 			}
 		}
