@@ -16,18 +16,18 @@
 
 
 <div class="flow-wrapper noselect">
-{foreach array_keys($conf->flowStatus) as $fs}
+{foreach array_keys($conf->ticketBoard) as $fs}
 	<div class="flow-column" style="width: {100 / $fs@total - 1}%;">
 		<h1>{$fs}</h1>
         {if in_array($fs, $showOffColumns)}
-            {if $view->SessionFilter->check('status')}
-                <a href="{$html->url('/tickets/board')}" class="show-hide-btn" title="{t}hide off{/t}">{t}hide off{/t}</a>
+            {if $view->SessionFilter->check('status') && in_array('off', $view->SessionFilter->read('status'))}
+                <a href="{$html->url('/tickets/board/show:default')}" class="show-hide-btn" title="{t}hide off{/t}">{t}hide off{/t}</a>
             {else}
-                <a href="{$html->url('/tickets/board/show:off')}" class="show-hide-btn off" title="{t}show all{/t}">{t}show all{/t}</a>
+                <a href="{$html->url('/tickets/board/show:all')}" class="show-hide-btn off" title="{t}show all{/t}">{t}show all{/t}</a>
             {/if}
         {/if}
 
-        {foreach $conf->flowStatus[$fs] as $s}
+        {foreach array_keys($conf->ticketBoard[$fs].ticketStatus) as $s}
         <label>{$s}</label>
         <div class="flow-container" data-flow-status="{$s}">
     		{if !empty($objectsByStatus[$fs][$s])}
@@ -39,7 +39,7 @@
 
                     {if !empty($o.UsersAssigned)}
                     <p class="item-assign">
-                        {foreach from=$o.UsersAssigned item="u" name="assigned"}
+                        {foreach $o.UsersAssigned as $u}
                             {if !empty($conf->flowShowGravatar)}
                                 {$gravatar->image($u, [
                                     'html' => [
@@ -51,6 +51,14 @@
                         {/foreach}
                     </p>
                     {/if}
+
+                    {*if !empty($o.categories)}
+                    <p class="item-assign">
+                        {foreach $o.categories as $cid => $cl}
+                            <span>{$cl}</span>
+                        {/foreach}
+                    </p>
+                    {/if*}
 
                     <footer>
                         {if !empty($o.severity)}

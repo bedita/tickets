@@ -17,21 +17,46 @@ $config["ticketStatus"] = array(
 	"duplicate" => "off"
 );
 
-$config['flowStatus'] = array(
+$config['ticketBoard'] = array(
 	'backlog' => array(
-		"new"
+		'orderBy' => 'modified',
+		'loadMore' => true,
+		'ticketStatus' => array(
+			"new" => 6
+		)
 	),
 	'todo' => array(
-		"reopened", "assigned"
+		'orderBy' => 'modified',
+		'loadMore' => true,
+		'ticketStatus' => array(
+			"reopened" => 1,
+			"assigned" => 5
+		)
 	),
 	'in progress' => array(
-		"analysis", "development"
+		'orderBy' => 'modified',
+		'loadMore' => true,
+		'ticketStatus' => array(
+			"analysis" => 7,
+			"development" => 8
+		)
 	),
 	'test' => array(
-		"test"
+		'orderBy' => 'modified',
+		'loadMore' => true,
+		'ticketStatus' => array(
+			"test" => 2
+		)
 	),
 	'done' => array(
-		"resolved", "unresolvable", "obsolete", "duplicate"
+		'orderBy' => 'modified',
+		'loadMore' => true,
+		'ticketStatus' => array(
+			"resolved" => 3,
+			"unresolvable" => 4,
+			"obsolete" => 6,
+			"duplicate" => 9
+		)
 	)
 );
 
@@ -43,4 +68,3 @@ $config["ticketAssignGroups"] = array(
 	// "tickets",
 );
 
-?>
