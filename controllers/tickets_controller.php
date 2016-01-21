@@ -244,19 +244,22 @@ class TicketsController extends ModulesController {
 	}
 
 	public function showUsers($id = null) {
-
-		$groups = Configure::read("ticketAssignGroups");
-		if (empty($groups)) {
-			$groups = $this->Group->getList(array("backend_auth" => 1));
-		}
-		$users = $this->User->find("all", array(
-				"contain" => array(
-					"Group" => array(
-						"conditions" => array("name" => $groups)
-						)
-					)
-				)
-			);
+        $groups = Configure::read('ticketAssignGroups') ?: $this->Group->getList(array('backend_auth' => 1));
+        $users = $this->User->find('all', array(
+            'contain' => array(),
+            'joins' => array(
+                array(
+                    'table' => 'groups_users',
+                    'type' => 'INNER',
+                    'conditions' => array('groups_users.user_id = User.id'),
+                ),
+                array(
+                    'table' => 'groups',
+                    'type' => 'INNER',
+                    'conditions' => array('groups.id = groups_users.group_id', 'groups.name' => $groups),
+                ),
+            ),
+        ));
 
 		$usersList = array();
 		$switch = (!empty($this->params["named"]["relation"]))? $this->params["named"]["relation"] : "assigned";
@@ -273,18 +276,14 @@ class TicketsController extends ModulesController {
 			$usersList = array($userSession['id']);
 		}
 
-		foreach ($users as $k => $u) {
-			if (empty($u["Group"])) {
-				unset($users[$k]);
-			} else {
-				if (in_array($u["User"]["id"], $usersList)) {
-					$users[$k]["User"]["related"] = true;
-				}
-			}
-		}
+        foreach ($users as &$user) {
+            if (in_array($user['User']['id'], $usersList)) {
+                $user['User']['related'] = true;
+            }
+        }
+        unset($user);
 
-		$this->set('users', $users);
-		$this->set('relation', $switch);
+		$this->set(compact('users', 'switch'));
 		$this->layout = null;
 	}
 

@@ -4,7 +4,7 @@
 
 <script type="text/javascript">
 <!--
-var userTicketRelation = "{$relation}";
+var userTicketRelation = "{$switch}";
 {literal}
 
 $(document).ready(function() {
@@ -54,7 +54,7 @@ $(document).ready(function() {
 	{/foreach}
 </table>
 
-<input id="usersToTickets" style="margin:10px 0px 10px 100px" type="button" value=" {if $relation == "assigned"}{t}assign{/t}{elseif $relation == "notify"}{t}notify{/t}{/if} "/>
+<input id="usersToTickets" style="margin:10px 0px 10px 100px" type="button" value=" {if $switch == "assigned"}{t}assign{/t}{elseif $switch == "notify"}{t}notify{/t}{/if} "/>
 </fieldset>
 
 </form>
