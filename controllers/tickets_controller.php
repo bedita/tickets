@@ -245,19 +245,21 @@ class TicketsController extends ModulesController {
 
 	public function showUsers($id = null) {
         $groups = Configure::read('ticketAssignGroups') ?: $this->Group->getList(array('backend_auth' => 1));
-        $users = $this->User->find('all', array(
+        $userIds = ClassRegistry::init('GroupsUser')->find('all', array(
+            'fields' => array('GroupsUser.user_id'),
             'contain' => array(),
             'joins' => array(
                 array(
-                    'table' => 'groups_users',
-                    'type' => 'INNER',
-                    'conditions' => array('groups_users.user_id = User.id'),
-                ),
-                array(
                     'table' => 'groups',
                     'type' => 'INNER',
-                    'conditions' => array('groups.id = groups_users.group_id', 'groups.name' => $groups),
+                    'conditions' => array('groups.id = GroupsUser.group_id', 'groups.name' => $groups),
                 ),
+            ),
+        ));
+        $users = $this->User->find('all', array(
+            'contain' => array(),
+            'conditions' => array(
+                'User.id' => Set::classicExtract($userIds, '{n}.GroupsUser.user_id'),
             ),
         ));
 
