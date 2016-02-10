@@ -29,7 +29,7 @@ $(document).ready(function(){
 		var status = $("input[name=closeAs]:checked", "#closeDialogContainer").val();
 		$("select#ticketStatus option[value='" + status + "']").attr('selected', 'selected');
 		$("#saveBEObject").click();
-		$("#modalmain").empty().css({height: '80px'}).addClass("modaloader");
+		$("#closeDialogContainer").empty().addClass("modaloader");
 	});
 	
 	$('#ticketStatus').change(function () {
