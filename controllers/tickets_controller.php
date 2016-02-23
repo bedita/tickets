@@ -203,14 +203,16 @@ class TicketsController extends ModulesController {
 		 	$this->Transaction->commit() ;
 			$this->eventInfo('status for ticket [' . $this->data['id'] . '] changed');
 
-			$this->ResponseHandler->setType('json');
-			$this->set(array(
-				'id' => $this->data['id'],
-				'ticket_status' => $this->data['ticket_status'],
-				'_serialize' => array('id', 'ticket_status')
-			));
-		}
-	}
+            $this->ResponseHandler->setType('json');
+            $this->set(array(
+                'id' => $this->data['id'],
+                'ticket_status' => $this->data['ticket_status'],
+                '_serialize' => array('id', 'ticket_status')
+            ));
+        } else {
+            $this->log('Unknown status in saveStatus: ' . $this->data['ticket_status'], 'error');
+        }
+    }
 
 	/**
 	 * save editor note
@@ -321,6 +323,7 @@ class TicketsController extends ModulesController {
 		}
 
 		$objectsByStatus = array();
+		$showOffColumns = array();
 		$ticketBoardOptions = Configure::read('ticketBoard');
 		$ticketStatus = Configure::read('ticketStatus');
 		foreach ($ticketBoardOptions as $boardColumn => $options) {
