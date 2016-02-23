@@ -40,7 +40,7 @@
                     {if !empty($o.UsersAssigned)}
                     <p class="item-assign">
                         {foreach $o.UsersAssigned as $u}
-                            {if !empty($conf->flowShowGravatar)}
+                            {if !empty($conf->showGravatar)}
                                 {$gravatar->image($u, [
                                     'html' => [
                                         'align' => 'center'

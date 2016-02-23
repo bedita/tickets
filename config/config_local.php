@@ -60,7 +60,7 @@ $config['ticketBoard'] = array(
 	)
 );
 
-$config['flowShowGravatar'] = true;
+$config['showGravatar'] = true;
 
 // define groups for ticket assignement, default backend authorized groups 
 $config["ticketAssignGroups"] = array(
