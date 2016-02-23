@@ -2,6 +2,8 @@
     {$html->script('libs/jquery/jquery-migrate-1.2.1', false)} {* assure js retrocompatibility *}
 {/if}
 
+{$html->css("/tickets/css/flow.css", null, ['inline' => false])}
+
 {literal}
 <script type="text/javascript">
     $(document).ready(function(){	
@@ -12,16 +14,15 @@
 
 {$view->element("modulesmenu")}
 
-{$view->element('menuleft', ['method' => 'index'])}
+{assign_associative var="params" method="index"}
+{$view->element("menuleft", $params)}
+{$view->element("menucommands", $params)}
 
-{$view->element('menucommands', ['method' => 'index'])}
-
-{$view->element("toolbar")}
 
 <div class="mainfull">
 
-	{$view->element("filters")}
+	{*$view->element("filters")*}
 		
-	{$view->element("list_objects")}
+	{$view->element("list_objects_flow")}
 
 </div>

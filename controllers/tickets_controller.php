@@ -35,6 +35,7 @@ class TicketsController extends ModulesController {
 
 	protected function beditaBeforeFilter() {
 		BeLib::getObject('BeConfigure')->loadPluginLocalConfig($this->moduleName);
+		BeLib::getObject('BeConfigure')->loadPluginLocalConfig($this->moduleName, 'module.cfg');
 	}
 
 	public function index($id = null, $order = '', $dir = true, $page = 1, $dim = 20) {
@@ -165,6 +166,54 @@ class TicketsController extends ModulesController {
 		$this->eventInfo("ticket [". $this->data["title"]."] saved");
 	}
 
+	public function saveStatus() {
+		$this->checkWriteModulePermission();
+
+		$ticketStatus = Configure::read('ticketStatus');
+		if (!empty($ticketStatus[$this->data['ticket_status']])) {
+			$objectUser = ClassRegistry::init('ObjectUser');
+			$assigned = $objectUser->find('all', array(
+				'conditions' => array(
+					'object_id' => $this->data['id'],
+					'switch' => array('assigned', 'notify')
+				),
+				'contain' => array()
+			));
+			$this->data['users'] = array('assigned' => '', 'notify' => '');
+			$users = Set::combine($assigned, '{n}.ObjectUser.id', '{n}.ObjectUser.user_id', '{n}.ObjectUser.switch');
+			if (!empty($users['assigned'])) {
+				$this->data['users']['assigned'] = implode(',', $users['assigned']);
+			}
+			if (!empty($users['notify'])) {
+				$this->data['users']['notify'] = implode(',', $users['notify']);
+			}
+			$this->data['status'] = $ticketStatus[$this->data['ticket_status']];
+
+			$ticket = ClassRegistry::init('BEObject')->find('first', array(
+				'fields' => array('title', 'description'),
+				'conditions' => array('id' => $this->data['id']),
+				'contain' => array()
+			));
+			$this->data['title'] = $ticket['BEObject']['title'];
+			$this->data['description'] = $ticket['BEObject']['description'];
+
+
+			$this->Transaction->begin();
+			$this->saveObject($this->Ticket);
+		 	$this->Transaction->commit() ;
+			$this->eventInfo('status for ticket [' . $this->data['id'] . '] changed');
+
+            $this->ResponseHandler->setType('json');
+            $this->set(array(
+                'id' => $this->data['id'],
+                'ticket_status' => $this->data['ticket_status'],
+                '_serialize' => array('id', 'ticket_status')
+            ));
+        } else {
+            $this->log('Unknown status in saveStatus: ' . $this->data['ticket_status'], 'error');
+        }
+    }
+
 	/**
 	 * save editor note
 	 * if it fails throw BeditaAjaxException managed like json object
@@ -242,6 +291,122 @@ class TicketsController extends ModulesController {
 	public function categories() {
 		$this->showCategories($this->Ticket);
 	}
+
+
+	public function board() {
+		$this->helpers[] = 'Gravatar';
+		$this->loadCategories(Configure::read('objectTypes.ticket.id'));
+
+		if (!empty($this->params['named']['show'])) {
+			if ($this->params['named']['show'] == 'all') {
+				$this->SessionFilter->add('status', array('on', 'draft', 'off'));
+			} else {
+				$this->SessionFilter->add('status', array('on', 'draft'));
+			}
+		}
+
+		if (!empty($this->params['named']['toggleCategory'])) {
+			$boardCategoriesFilter = $this->SessionFilter->read('boardCategories');
+			if (empty($boardCategoriesFilter)) {
+				$boardCategoriesFilter = array($this->params['named']['toggleCategory']);
+			} elseif (in_array($this->params['named']['toggleCategory'], $boardCategoriesFilter)) {
+				$boardCategoriesFilter = array_diff($boardCategoriesFilter, array($this->params['named']['toggleCategory']));
+			} else {
+				$boardCategoriesFilter[] = $this->params['named']['toggleCategory'];
+			}
+
+			if (empty($boardCategoriesFilter)) {
+				$this->SessionFilter->delete('boardCategories');
+			} else {
+				$this->SessionFilter->add('boardCategories', $boardCategoriesFilter);
+			}
+		}
+
+		$objectsByStatus = array();
+		$showOffColumns = array();
+		$ticketBoardOptions = Configure::read('ticketBoard');
+		$ticketStatus = Configure::read('ticketStatus');
+		foreach ($ticketBoardOptions as $boardColumn => $options) {
+			$arr = array_intersect_key($ticketStatus, $options['ticketStatus']);
+			if (in_array('off', $arr)) {
+				$showOffColumns[] = $boardColumn;
+			}
+
+			// load each column
+			foreach (array_keys($options['ticketStatus']) as $ts) {
+				$this->loadBoardColumn($boardColumn, $ts);
+
+
+
+				foreach ($this->viewVars['objects'] as $o) {
+					$objectsByStatus[$boardColumn][$o['ticket_status']][] = $o;
+				}
+			}
+		}
+
+		$this->set('showOffColumns', $showOffColumns);
+		$this->set('objectsByStatus', $objectsByStatus);
+	}
+
+
+	public function loadBoardColumn($boardColumn, $ticketStatus) {
+		if ($this->RequestHandler->isAjax()) {
+			$this->layout = 'ajax';
+			$this->SessionFilter->setup('Tickets.board');	
+		}
+		$boardColumnOptions = Configure::read('ticketBoard.' . $boardColumn);
+		$id = null;
+		$order = $boardColumnOptions['orderBy'];
+		$dir = 1;
+		$page = 1;
+		$dim = $boardColumnOptions['ticketStatus'][$ticketStatus];
+		$filter['object_type_id'] = array(Configure::read('objectTypes.ticket.id'));
+		$filter['Ticket.ticket_status'] = $ticketStatus;
+		$filter['user_created'] = '';
+		$filter['Ticket.*'] = ''; 
+		$filter['count_annotation'] = array('EditorNote');
+
+		$currentFilter = $this->SessionFilter->read();
+		$filter['status'] = empty($currentFilter['status']) ? array('on', 'draft') : $currentFilter['status'];
+
+		if (!empty($currentFilter['boardCategories'])) {
+			$filter['joins'] = array(
+				array(
+					'table' => 'object_categories',
+					'alias' => 'ObjectCategory',
+					'type' => 'INNER',
+					'conditions' => array(
+						'BEObject.id = ObjectCategory.object_id',
+						'ObjectCategory.category_id' => $currentFilter['boardCategories']
+					)
+				)
+			);
+		}
+
+		$this->paginatedList($id, $filter, $order, $dir, $page, $dim);
+
+		$category = ClassRegistry::init('Category');
+		$category->Behaviors->disable('CompactResult');
+		foreach ($this->viewVars['objects'] as &$o) {
+			$o['categories'] = ClassRegistry::init('Category')->find('list', array(
+				'fields' => array('id', 'label'),
+				'joins' => array(
+					array(
+						'table' => 'object_categories',
+						'alias' => 'ObjectCategory',
+						'type' => 'INNER',
+						'conditions' => array(
+							'Category.id = ObjectCategory.category_id',
+							'ObjectCategory.object_id' => $o['id']
+						)
+					)
+				)
+			));
+		}
+		$category->Behaviors->enable('CompactResult');
+		$this->loadAssignedUsers();
+	}
+
 
 	public function showUsers($id = null) {
         $groups = Configure::read('ticketAssignGroups') ?: $this->Group->getList(array('backend_auth' => 1));
