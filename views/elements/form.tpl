@@ -25,6 +25,8 @@ var ts = {{/literal}{foreach item='val' key='key' from=$conf->ticketStatus}"{$ke
 
 {$view->element("form_title_subtitle")}
 
+{$view->element('form_tree')}
+
 {$view->element("form_custom_properties")}
 
 <div class="tab"><h2>{t}Users and time{/t}</h2></div>
