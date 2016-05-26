@@ -476,12 +476,14 @@ class TicketsController extends ModulesController {
 		// load all users with a ticket assigned
 		$all_users_id = $objectUser->find("list", array(
 			"fields" => "user_id",
-			"conditions" => array("switch" => "assigned")
+			"conditions" => array("switch" => "assigned"),
+            'group' => 'user_id',
 		));
 		$all_users = array();
 		if(!empty($all_users_id)) {
 			$all_users = ClassRegistry::init("User")->find("all", array(
 				"conditions" => array("User.id" => $all_users_id),
+                'order' => array('User.userid'),
 				"recursive" => -1
 			));
 		}
@@ -495,13 +497,15 @@ class TicketsController extends ModulesController {
 					"conditions" => array(
 						"switch" => "assigned",
 						"object_id" => $object["id"]
-					)
+					),
+                    'group' => 'user_id',
 				));
 
 				$users = array();
 				if(!empty($users_id)) {
 					$users = ClassRegistry::init("User")->find("all", array(
 						"conditions" => array("User.id" => $users_id),
+                        'order' => array('User.userid'),
 						"recursive" => -1
 					));
 				}
@@ -517,13 +521,15 @@ class TicketsController extends ModulesController {
 	protected function loadReporters() {
 		$users_id = ClassRegistry::init("BEObject")->find('list', array(
 			'fields' => 'user_created',
-			'conditions' => array("object_type_id" => Configure::read('objectTypes.ticket.id'))
+			'conditions' => array("object_type_id" => Configure::read('objectTypes.ticket.id')),
+            'group' => 'user_created',
 		));
 		$users_id = array_unique($users_id);
 		$reporters = array();
 		if(!empty($users_id)) {
 			$reporters = ClassRegistry::init("User")->find("all", array(
 				"conditions" => array('id' => $users_id),
+                'order' => array('User.userid'),
 				'recursive' => -1
 			));
 		}
