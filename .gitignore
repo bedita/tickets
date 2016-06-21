@@ -1,5 +1,6 @@
 /.buildpath
 /.project
 /.settings
+/.vscode
 /config/notify/tickets.local.msg.php
 /config/module.cfg.php
