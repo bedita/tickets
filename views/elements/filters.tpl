@@ -51,6 +51,25 @@
 				</ul>
 			</div>
 
+			<div class="cell relations">
+				<label>{t}relations{/t}:</label>
+				<select name="filter[relation]" id="relation">
+					<option value="">{t}all{/t}</option>
+					{foreach $ticketRelations as $relName => $relLabel}
+						{strip}
+						<option value="{$relName}" {if $view->SessionFilter->read('relation') == $relName}selected="selected"{/if}>
+							{t}{$relLabel}{/t}
+						</option>
+						{/strip}
+					{/foreach}
+				</select>
+
+				&nbsp;
+					<input type="checkbox" name="filter[tree_related_object]"
+						{if $view->SessionFilter->check('tree_related_object')}checked="checked"{/if} />
+						<span>{t}with items located on above position{/t}</span>
+			</div>
+
 			<div class="cell reporter">
 				<label>{t}reporter{/t}:</label>
 					<select name="data[reporter]" class="filterTicket">

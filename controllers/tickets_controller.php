@@ -118,6 +118,9 @@ class TicketsController extends ModulesController {
 		$this->loadReporters();
 		$this->loadAssignedUsers();
 
+        $ticketRelations = ClassRegistry::init('ObjectRelation')->availableRelations('ticket');
+        $this->set('ticketRelations', $ticketRelations);
+
 		$f['hide_status_off'] = $hideStatusOff;
 
 		$this->set('filter', $f);

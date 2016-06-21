@@ -24,16 +24,19 @@
  * For example use it to define objects relations with other BEdita objects  
  */
 
-$config["objRelationType"] = array(
-	"ticketRelated" => array(
-		"hidden" => false,
-		"left" 	 => array("ticket"),
-		"right"  => array("document", "event", "short_news", "image","video", "card")
+$config['objRelationType'] = array(
+	'ticketRelated' => array(
+        'label' => 'ticket related',
+        'hidden'=> false,
+        'left' 	 => array('ticket'),
+        'right'  => array('document', 'section', 'event', 'short_news', 'image', 'video', 'card')
 	),
-	"seeTicket" => array(
-		"hidden" => false,
-		"left" 	 => array("ticket"),
-		"right"  => array("ticket")
+
+    'seeTicket' => array(
+        'label' => 'see ticket',
+        'hidden'=> false,
+		'left' 	 => array('ticket'),
+		'right'  => array('ticket'),
 	)
 );
 
