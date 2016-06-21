@@ -44,6 +44,7 @@ class TicketsController extends ModulesController {
 		// if BEdita support session filter get current session filter else set it to empty array
 		$sessionFilterSupported = (strcmp($conf->majorVersion, '3.3.0') >= 0) ? true : false;
 		$currentFilter = ($sessionFilterSupported) ? $this->SessionFilter->read() : array();
+        $filterActive = !empty($currentFilter);
 
 		if (!empty($this->params['form']['cleanFilter'])) {
 			$this->data = array();
@@ -54,6 +55,7 @@ class TicketsController extends ModulesController {
 
 		if (!empty($this->data['severity'])) {
 			$filter['Ticket.severity'] = $this->data['severity'];
+            $filterActive = true;
 			if ($sessionFilterSupported) {
 				$this->SessionFilter->add('Ticket.severity', $this->data['severity']);
 			}
@@ -63,6 +65,7 @@ class TicketsController extends ModulesController {
 
 		if (!empty($this->data['status'])) {
 			$ts = array_keys($this->data['status']);
+            $filterActive = true;
 			$filter['Ticket.ticket_status'] = $ts;
 			if ($sessionFilterSupported) {
 				$this->SessionFilter->add('Ticket.ticket_status', $ts);
@@ -87,6 +90,7 @@ class TicketsController extends ModulesController {
 		$hideStatusOff = (!count(array_diff(array('on', 'draft', 'off'), $filter['status'])))? false : true;
 
 		if (!empty($this->data['assigned_to'])) {
+            $filterActive = true;
 			$filter['ObjectUser.switch'] = 'assigned';
 			$filter['ObjectUser.user_id'] = $this->data['assigned_to'];
 			if ($sessionFilterSupported) {
@@ -99,6 +103,7 @@ class TicketsController extends ModulesController {
 		}
 
 		if (!empty($this->data['reporter'])) {
+            $filterActive = true;
 			$filter['BEObject.user_created'] = $this->data['reporter'];
 			if ($sessionFilterSupported) {
 				$this->SessionFilter->add('BEObject.user_created', $filter['BEObject.user_created']);
@@ -117,6 +122,8 @@ class TicketsController extends ModulesController {
 		$this->loadCategories($filter['object_type_id']);
 		$this->loadReporters();
 		$this->loadAssignedUsers();
+
+        $this->set('filterActive', $filterActive);
 
 		$f['hide_status_off'] = $hideStatusOff;
 

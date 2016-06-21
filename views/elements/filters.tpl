@@ -1,4 +1,4 @@
-<div class="tab"><h2>{t}filters{/t}</h2></div>
+<div class="tab{if $filterActive} open filteractive{/if}"><h2>{t}filters{/t}</h2></div>
 <div class="filters" id="ticketfilter">
 	<form id="formFilter" action="{$beurl->getUrl(['page', 'dim', 'dir', 'order'])}" method="post">
 		<input type="hidden" name="cleanFilter" value=""/>
