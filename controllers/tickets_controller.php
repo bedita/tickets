@@ -43,8 +43,10 @@ class TicketsController extends ModulesController {
 
 		// if BEdita support session filter get current session filter else set it to empty array
 		$sessionFilterSupported = (strcmp($conf->majorVersion, '3.3.0') >= 0) ? true : false;
+        $defaultFilter = array('status' => array('NOT' => 'off'));
 		$currentFilter = ($sessionFilterSupported) ? $this->SessionFilter->read() : array();
-        $filterActive = !empty($currentFilter);
+        $filterActive = !(empty($currentFilter) || $currentFilter == $defaultFilter);
+
 
 		if (!empty($this->params['form']['cleanFilter'])) {
 			$this->data = array();
