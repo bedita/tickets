@@ -31,7 +31,7 @@ class Ticket extends BEAppObjectModel {
 	public $objectTypesGroups = array("related");
 
 	public $actsAs = array(
-		'CompactResult' 		=> array("ReferenceObject"),
+		'CompactResult' => array('ReferenceObject'),
 		'TicketNotifier'
 	);
 
